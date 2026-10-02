@@ -1,7 +1,8 @@
-Dưới đây là file tổng hợp đầy đủ. Bạn có thể copy toàn bộ nội dung và lưu thành `README.md` hoặc `DOCUMENTATION.md` trong repo.
+Đây là **phiên bản sạch** để bạn thay thế toàn bộ nội dung file `Grok/Readme.md`:
 
 ```markdown
 # LGPO + Action1 Deployment Guide
+
 **Môi trường:** Windows 10/11 Pro Workgroup (~100 máy)  
 **Công cụ:** Action1 RMM + LGPO.exe + GitHub  
 **Tenant:** KIA (50 user native + 50 Guest từ 5 tenant khác)  
@@ -32,13 +33,14 @@ https://github.com/JaxVN/LGPO
 │   ├── S003.ps1                      # Restore GPO (đã clean stderr)
 │   ├── S004.ps1                      # Apply Hide C: (Non-Administrators)
 │   ├── S005.ps1                      # Office Cloud-only Save
-│   └── ...
+│   └── Readme.md                     # File này
 ├── Policies/
 │   └── NonAdmin-Registry.pol         # Registry.pol của Non-Administrators
-└── DOCUMENTATION.md                  # File này
+└── DOCUMENTATION.md
 ```
 
 **Đường dẫn chuẩn trên máy:**
+
 - LGPO.exe: `C:\Soft\SCT\LGPO_30\LGPO.exe`
 - Backup: `C:\Soft\GPO-Backup\Backup-YYYYMMDD-HHMMSS\`
 - Zip: `C:\Soft\GPO-Zip\`
@@ -68,7 +70,7 @@ exit 0
 
 ## 4. Các Script chính
 
-### 4.1. Download + Extract LGPO (đã có)
+### 4.1. Download + Extract LGPO
 
 ```powershell
 $url = "https://github.com/JaxVN/LGPO/raw/main/LGPO.zip"
@@ -84,7 +86,7 @@ Invoke-WebRequest -Uri $url -OutFile $zipFile -UseBasicParsing
 Expand-Archive -Path $zipFile -DestinationPath $destinationFolder -Force
 ```
 
-### 4.2. Backup GPO (Script A)
+### 4.2. Backup GPO
 
 ```powershell
 $lgpoExe = "C:\Soft\SCT\LGPO_30\LGPO.exe"
@@ -97,7 +99,7 @@ New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
 Write-Output "✓ Backup thành công: $backupPath"
 ```
 
-### 4.3. Restore GPO (Script clean – khuyến nghị)
+### 4.3. Restore GPO (clean – khuyến nghị)
 
 ```powershell
 $ErrorActionPreference = "Stop"
@@ -131,6 +133,7 @@ exit 0
 ### 4.4. Ẩn ổ C: chỉ cho Non-Administrators
 
 **Cách làm:**
+
 1. Trên máy mẫu → MMC → Add Group Policy Object Editor → **Non-Administrators**
 2. Bật: `User Configuration → Administrative Templates → Windows Components → File Explorer → Hide these specified drives in My Computer → Restrict C drive only`
 3. Copy file: `C:\Windows\System32\GroupPolicyUsers\S-1-5-32-545\User\Registry.pol`
@@ -143,7 +146,7 @@ $polFile = "C:\Soft\GPO-NonAdmin\Registry.pol"
 gpupdate /force | Out-Null
 ```
 
-> **Lưu ý:** `/un` = Non-Administrators, `/ua` = Administrators, `/u` = tất cả user.
+> **Lưu ý:** `/un` = Non-Administrators · `/ua` = Administrators · `/u` = tất cả user
 
 ### 4.5. Office chỉ lưu vào OneDrive Business + SharePoint
 
@@ -177,7 +180,7 @@ Write-Output "✓ Office chỉ hiện OneDrive for Business + SharePoint"
 | 128 | Ẩn Third Party |
 | **5** | 1+4 → Ẩn Personal + This PC (khuyến nghị) |
 
-Nguồn: https://admxguide.com/policies/Office/L_OnlineStorageFilter.html
+Nguồn: [ADMX Guide - OnlineStorageFilter](https://admxguide.com/policies/Office/L_OnlineStorageFilter.html)
 
 ---
 
@@ -186,17 +189,17 @@ Nguồn: https://admxguide.com/policies/Office/L_OnlineStorageFilter.html
 - 50 user thuộc tenant **KIA** (native)
 - 50 user Guest từ 5 tenant khác → truy cập KIA bằng Guest account
 - Khi cấu hình sync 10 trang SharePoint Public:
-  - User **không có quyền** → **không sync** trang đó, **không gây lỗi** toàn hệ thống.
-  - Nên tách Endpoint Group trên Action1 giữa Member và Guest.
+  - User **không có quyền** → **không sync** trang đó, **không gây lỗi** toàn hệ thống
+  - Nên tách Endpoint Group trên Action1 giữa Member và Guest
 
 ---
 
 ## 6. Lưu ý quan trọng khi dùng Action1
 
-1. Action1 chạy dưới **SYSTEM** → script Office registry (HKCU) cần chạy dưới user context (Scheduled Task hoặc Action1 User session).
-2. LGPO.exe thường ghi ra **stderr** → Action1 hiện **Error** dù exit code = 0.  
-   → Luôn dùng `2>&1 | Out-String` + `Write-Output`.
-3. Sau khi restore GPO nên `gpupdate /force` và khuyến khích user logoff/login.
+1. Action1 chạy dưới **SYSTEM** → script Office registry (HKCU) cần chạy dưới user context (Scheduled Task hoặc Action1 User session)
+2. LGPO.exe thường ghi ra **stderr** → Action1 hiện **Error** dù exit code = 0  
+   → Luôn dùng `2>&1 | Out-String` + `Write-Output`
+3. Sau khi restore GPO nên `gpupdate /force` và khuyến khích user logoff/login
 
 ---
 
@@ -233,5 +236,3 @@ LGPO.exe /ua C:\path\Registry.pol
 **Ghi chú:** File này được tổng hợp từ cuộc hội thoại ngày 02/10/2026.  
 Cập nhật khi có thay đổi quy trình.
 ```
-
-Bạn chỉ cần copy toàn bộ khối trên → tạo file `DOCUMENTATION.md` (hoặc `README.md`) trong repo `JaxVN/LGPO` là được.
