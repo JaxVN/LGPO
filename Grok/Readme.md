@@ -1,4 +1,3 @@
-markdown
 # LGPO + Action1 Deployment Guide
 
 **Môi trường:** Windows 10/11 Pro Workgroup (~100 máy)  
