@@ -1,46 +1,46 @@
-# Script: Restore Local Group Policy từ bản backup
-# Chạy với quyền Administrator / SYSTEM
-
+# Script: Restore Local Group Policy (Action1-friendly)
 $ErrorActionPreference = "Stop"
 
 $lgpoExe    = "C:\Soft\SCT\LGPO_30\LGPO.exe"
-$backupRoot = "C:\Soft\GPO-Backup"          # Thư mục chứa các bản backup
+$backupRoot = "C:\Soft\GPO-Backup"
 
-# ===== Tìm bản backup mới nhất =====
 $latestBackup = Get-ChildItem -Path $backupRoot -Directory -ErrorAction SilentlyContinue | 
                 Sort-Object LastWriteTime -Descending | 
                 Select-Object -First 1
 
 if (-not $latestBackup) {
-    Write-Host "ERROR: Không tìm thấy thư mục backup nào trong $backupRoot" -ForegroundColor Red
+    Write-Output "ERROR: Không tìm thấy thư mục backup nào trong $backupRoot"
     exit 1
 }
 
 $backupPath = $latestBackup.FullName
-Write-Host "Đang restore từ: $backupPath" -ForegroundColor Cyan
+Write-Output "Đang restore từ: $backupPath"
 
-# Kiểm tra LGPO.exe
 if (-not (Test-Path $lgpoExe)) {
-    Write-Host "ERROR: Không tìm thấy LGPO.exe tại $lgpoExe" -ForegroundColor Red
+    Write-Output "ERROR: Không tìm thấy LGPO.exe"
     exit 1
 }
 
 try {
-    # Restore toàn bộ GPO backup (Machine + User)
-    & $lgpoExe /g $backupPath /v
+    # Chạy LGPO, chuyển toàn bộ output về stdout, ẩn banner
+    $result = & $lgpoExe /g $backupPath 2>&1 | Out-String
 
     if ($LASTEXITCODE -ne 0) {
-        throw "LGPO.exe trả về mã lỗi: $LASTEXITCODE"
+        Write-Output "ERROR: LGPO.exe trả về mã lỗi $LASTEXITCODE"
+        Write-Output $result
+        exit $LASTEXITCODE
     }
 
-    # Cập nhật policy ngay
-    Write-Host "Đang chạy gpupdate /force ..." -ForegroundColor Cyan
+    # Chỉ in những dòng quan trọng
+    Write-Output "LGPO restore completed successfully"
+
+    Write-Output "Đang chạy gpupdate /force ..."
     gpupdate /force | Out-Null
 
-    Write-Host "✓ Restore GPO thành công!" -ForegroundColor Green
-    Write-Host "Đã áp dụng backup: $($latestBackup.Name)"
+    Write-Output "✓ Restore GPO thành công!"
+    Write-Output "Đã áp dụng backup: $($latestBackup.Name)"
 } catch {
-    Write-Host "✗ Lỗi khi restore: $_" -ForegroundColor Red
+    Write-Output "✗ Lỗi khi restore: $_"
     exit 1
 }
 
