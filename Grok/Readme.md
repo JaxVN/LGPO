@@ -1,5 +1,3 @@
-Đây là **phiên bản sạch** để bạn thay thế toàn bộ nội dung file `Grok/Readme.md`:
-
 ```markdown
 # LGPO + Action1 Deployment Guide
 
