@@ -33,7 +33,7 @@ https://github.com/JaxVN/LGPO
 │   └── Readme.md                     # File này
 ├── Policies/
 │   └── NonAdmin-Registry.pol         # Registry.pol của Non-Administrators
-└── DOCUMENTATION.md
+└── Readme.md
 ```
 
 **Đường dẫn chuẩn trên máy:**
