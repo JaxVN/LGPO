@@ -25,11 +25,12 @@
 https://github.com/JaxVN/LGPO
 ├── LGPO.zip                          # LGPO.exe
 ├── Grok/
-│   ├── S001.ps1                      # Download + Extract LGPO
-│   ├── S002.ps1                      # Backup GPO
-│   ├── S003.ps1                      # Restore GPO (đã clean stderr)
-│   ├── S004.ps1                      # Apply Hide C: (Non-Administrators)
-│   ├── S005.ps1                      # Office Cloud-only Save
+│   ├── S001.ps1                      # Deploy: OneDrive KFM + Hide C: Drive
+│   ├── S002.ps1                      # Restrict Office Save (Cloud-only)
+│   ├── S003.ps1                      # Restore Local Group Policy
+│   ├── S01.ps1                       # Backup Local Group Policy
+│   ├── S02.ps1                       # Compress Backup thành ZIP
+│   ├── S03.ps1                       # Upload ZIP lên SharePoint
 │   └── Readme.md                     # File này
 ├── Policies/
 │   └── NonAdmin-Registry.pol         # Registry.pol của Non-Administrators
