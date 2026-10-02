@@ -1,4 +1,4 @@
-```markdown
+markdown
 # LGPO + Action1 Deployment Guide
 
 **Môi trường:** Windows 10/11 Pro Workgroup (~100 máy)  
@@ -233,4 +233,3 @@ LGPO.exe /ua C:\path\Registry.pol
 
 **Ghi chú:** File này được tổng hợp từ cuộc hội thoại ngày 02/10/2026.  
 Cập nhật khi có thay đổi quy trình.
-```
