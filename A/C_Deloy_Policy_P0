@@ -1,0 +1,23 @@
+# Action1 Script: Gọi chạy S000.ps1 từ GitHub
+# Tải PolicyDefinitions về C:\Soft\LGPO và copy vào C:\Windows\PolicyDefinitions
+
+$ErrorActionPreference = "Stop"
+
+$ScriptUrl = "https://raw.githubusercontent.com/JaxVN/LGPO/main/Grok/S000.ps1"
+
+Write-Output "Đang tải và chạy S000.ps1 từ GitHub..."
+
+try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+    # Tải nội dung script về bộ nhớ rồi chạy luôn
+    $scriptContent = (Invoke-WebRequest -Uri $ScriptUrl -UseBasicParsing).Content
+    Invoke-Expression $scriptContent
+
+    Write-Output "✓ S000.ps1 chạy thành công"
+    exit 0
+}
+catch {
+    Write-Output "✗ Lỗi khi chạy S000.ps1: $_"
+    exit 1
+}
