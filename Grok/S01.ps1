@@ -2,8 +2,6 @@
 # Chạy với quyền Administrator / SYSTEM
 # Đã xử lý stderr của LGPO.exe để Action1 không báo Error
 
-$ErrorActionPreference = "Stop"
-
 $lgpoExe    = "C:\Soft\SCT\LGPO_30\LGPO.exe"
 $backupRoot = "C:\Soft\GPO-Backup"
 $timestamp  = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -20,13 +18,19 @@ New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
 Write-Output "Đang backup Local Policy vào: $backupPath"
 
 try {
-    # Chuyển stderr → stdout để Action1 không đánh dấu Error
-    $result = & $lgpoExe /b $backupPath 2>&1 | Out-String
+    # Tạm tắt Stop để LGPO không làm script bị dừng
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Output "ERROR: LGPO.exe trả về mã lỗi: $LASTEXITCODE"
+    $result = & $lgpoExe /b $backupPath 2>&1 | Out-String
+    $exitCode = $LASTEXITCODE
+
+    $ErrorActionPreference = $prevEAP
+
+    if ($exitCode -ne 0) {
+        Write-Output "ERROR: LGPO.exe trả về mã lỗi: $exitCode"
         Write-Output $result
-        exit $LASTEXITCODE
+        exit $exitCode
     }
 
     Write-Output "✓ Backup thành công!"
