@@ -1,0 +1,35 @@
+# PowerShell Script: Download and Extract LGPO.zip
+
+# Đặt URL của file
+$url = "https://github.com/JaxVN/LGPO/raw/main/LGPO.zip"
+
+# Đặt đường dẫn thư mục đích
+$destinationFolder = "C:\Soft\SCT"
+$zipFile = "$destinationFolder\LGPO.zip"
+
+# Tạo thư mục nếu chưa tồn tại
+if (-not (Test-Path -Path $destinationFolder)) {
+    New-Item -ItemType Directory -Path $destinationFolder -Force | Out-Null
+    Write-Host "Đã tạo thư mục: $destinationFolder" -ForegroundColor Green
+}
+
+# Tải file từ GitHub
+Write-Host "Đang tải LGPO.zip từ GitHub..." -ForegroundColor Cyan
+try {
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri $url -OutFile $zipFile -UseBasicParsing
+    Write-Host "✓ Tải file thành công: $zipFile" -ForegroundColor Green
+} catch {
+    Write-Host "✗ Lỗi khi tải file: $_" -ForegroundColor Red
+    exit 1
+}
+
+# Giải nén file
+Write-Host "Đang giải nén file..." -ForegroundColor Cyan
+try {
+    Expand-Archive -Path $zipFile -DestinationPath $destinationFolder -Force
+    Write-Host "✓ Giải nén thành công vào: $destinationFolder" -ForegroundColor Green
+} catch {
+    Write-Host "✗ Lỗi khi giải nén: $_" -ForegroundColor Red
+    exit 1
+}
