@@ -15,13 +15,13 @@ $zipRoot  = "C:\Soft\GPO-Zip"
 $zipFile  = Join-Path $zipRoot "GPO-Template.zip"
 
 function Invoke-Lgpo {
-    # Chay LGPO, bat stdout/stderr vao file -> Action1 khong bao Error gia do stderr
+    # Chay LGPO, bat stdout/stderr vao file -> Action1 khong bao Error gia do stderr. Exit code luu o $script:LgpoExit
     param([string[]]$Arguments)
     $o = Join-Path $env:TEMP "lgpo_out.txt"; $e = Join-Path $env:TEMP "lgpo_err.txt"
     $p = Start-Process -FilePath $lgpoExe -ArgumentList $Arguments -Wait -PassThru -NoNewWindow `
          -RedirectStandardOutput $o -RedirectStandardError $e
     Get-Content $o, $e -ErrorAction SilentlyContinue | ForEach-Object { Write-Output "  [lgpo] $_" }
-    return $p.ExitCode
+    $script:LgpoExit = $p.ExitCode   # KHONG return: output cua ham se lan vao gia tri tra ve
 }
 
 try {
@@ -32,8 +32,8 @@ try {
 
     # 1. Backup Local GPO (Machine + User + Security + Audit)
     Write-Output "Backup Local Policy..."
-    $rc = Invoke-Lgpo @("/b", "`"$work\Backup`"", "/n", "`"GPO-Template`"")
-    if ($rc -ne 0) { throw "LGPO /b loi, exit code $rc" }
+    Invoke-Lgpo @("/b", "`"$work\Backup`"", "/n", "`"GPO-Template`"")
+    if ($script:LgpoExit -ne 0) { throw "LGPO /b loi, exit code $script:LgpoExit" }
 
     $guid = Get-ChildItem "$work\Backup" -Directory | Where-Object { $_.Name -match '^\{[0-9A-Fa-f-]{36}\}$' } | Select-Object -First 1
     if (-not $guid) { throw "LGPO khong tao thu muc {GUID} trong $work\Backup" }
