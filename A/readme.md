@@ -43,7 +43,7 @@ Cả 4 script **độc lập** (dán thẳng vào Action1 hoặc chạy qua laun
 
 ## Quy trình thực hiện
 
-1. **Laptop mẫu**: chạy `Part1` + `P0` (LGPO + ADMX), cấu hình tay bằng `gpedit.msc` / `secpol.msc` (và MMC cho Non-Administrators nếu cần ẩn ổ C), test kỹ.
+1. **Laptop mẫu**: chạy `Part1` + `P0` (LGPO + ADMX), cấu hình tay bằng `gpedit.msc` / `secpol.msc` (và MMC cho Non-Administrators nếu cần ẩn ổ C), test kỹ. Riêng SRP xem mục [SRP](#srp-software-restriction-policies-cho-non-administrators).
 2. Chạy `T1_Backup_Template.ps1` → kiểm tra `C:\Soft\GPO-Zip\GPO-Template.zip`.
 3. Chạy `T2_Upload_Template.ps1` → ZIP lên `Templates/` (hoặc upload tay qua web rồi nhớ upload cả `.sha256`).
 4. **Thử 1–2 máy** bằng `T3` trước, kiểm tra, rồi mới tạo Action1 policy/automation cho cả đội. Tách Endpoint Group Member / Guest nếu cần.
@@ -59,6 +59,21 @@ Invoke-Expression (Invoke-WebRequest -Uri $u -UseBasicParsing).Content
 ```
 
 > Launcher chạy mã từ nhánh `main` bằng SYSTEM → chỉ cho người có quyền ghi repo; cân nhắc ghim commit SHA thay cho `main`.
+
+## SRP (Software Restriction Policies) cho Non-Administrators
+
+**Không dùng `Grok/SRP.ps1` để deploy.** Script đó ghi thẳng registry (HKLM) nên không vào được backup/ZIP, không idempotent (mỗi lần chạy thêm GUID rule trùng) và đang đặt `DefaultLevel = 262144` (Unrestricted) nên các rule "cho phép" không có tác dụng. Giữ lại chỉ như **danh sách rule tham khảo** để nhập tay.
+
+Cấu hình bằng MMC (đã xác nhận có mục này trong Non-Administrators Policy trên Windows 11):
+
+1. `mmc` → File → Add/Remove Snap-in → **Group Policy Object Editor** → Browse → tab **Users** → **Non-Administrators**.
+2. `User Configuration → Windows Settings → Security Settings → Software Restriction Policies` → chuột phải → **New Software Restriction Policies**.
+3. **Security Levels**: chọn **Disallowed** → *Set as Default* nếu muốn whitelist; để **Unrestricted** nếu chỉ chặn vài thứ.
+4. **Additional Rules**: nhập các path rule (Unrestricted) và rule chặn MS Store `%programfiles%\WindowsApps\Microsoft.WindowsStore*` (Disallowed) lấy từ `Grok/SRP.ps1`. Nên rà lại các rule quá rộng: `%UserProfile%\Desktop`, `C:\Users\*\AppData\Local\Microsoft\*\*\*.exe`, `F:\*\*\*\*`.
+5. **Reboot** laptop mẫu (SRP tạo lần đầu cần reboot mới có hiệu lực), test bằng tài khoản user thường.
+6. Chạy `T1`; kiểm tra `Extra\NonAdmin-Registry.pol` trong ZIP có key `Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers`.
+
+Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đăng nhập lại) lần đầu** để SRP có hiệu lực. Không chạy `SRP.ps1` song song; nếu HKLM và HKCU cùng định nghĩa SRP, tôi nhớ machine-level được ưu tiên (chưa kiểm chứng) – nên chỉ giữ một nguồn.
 
 ## Đường dẫn trên máy
 
@@ -78,4 +93,5 @@ Invoke-Expression (Invoke-WebRequest -Uri $u -UseBasicParsing).Content
 - **ZIP chứa toàn bộ policy của máy mẫu**, kể cả tên máy/đường dẫn nội bộ (SRP…). Nếu repo public, cân nhắc chuyển repo private và điền `$Token` trong T3 (PAT chỉ Contents: Read).
 - SHA256 trong `.sha256` chặn được tải hỏng/ghi lỗi, nhưng không chặn kẻ có quyền ghi repo (họ ghi được cả hai file). Muốn chặt hơn, đặt hash mong đợi cố định trong Action1.
 - Bản này **chưa test trên Windows** (môi trường dựng script là Linux). Hãy thử trên 1 VM/máy test trước: kiểm `LGPO /b` tạo `{GUID}`, `/g` áp lại đúng, rollback hoạt động.
-- Còn lại chưa làm: upload backup định kỳ lên SharePoint và restore từ SharePoint (`Grok/S02`, `Grok/S03`), SRP (xem báo cáo rà soát).
+- `Policies/NonAdmin-Registry.pol` hiện trong repo mới có `NoDrives` + vài key certificate, **chưa có SRP**; ZIP mới từ T1 sẽ chứa cả hai sau khi cấu hình xong.
+- Còn lại chưa làm: upload backup định kỳ lên SharePoint và restore từ SharePoint (`Grok/S02`, `Grok/S03`).
