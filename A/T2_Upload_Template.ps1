@@ -4,14 +4,17 @@
 # Can GitHub token (fine-grained PAT): repo JaxVN/LGPO, quyen "Contents: Read and write".
 # Truyen token qua bien moi truong $env:GITHUB_TOKEN, hoac script se hoi (khong luu lai, khong in ra).
 #
-# Dich: Templates/GPO-Template.zip  va  Templates/GPO-Template.zip.sha256  (nhanh main)
+# Dich: Templates/<Win10|Win11>/GPO-Template.zip va .sha256 (nhanh main). Thu muc tu nhan theo build Windows cua may chay script
+#   (build >= 22000 = Win11, nguoc lai Win10). Muon ep: dat $OsFolder o duoi.
 
 $ErrorActionPreference = "Stop"
 
 $Owner  = "JaxVN"
 $Repo   = "LGPO"
 $Branch = "main"
-$Remote = "Templates"
+$OsFolder = ""    # de trong = tu nhan theo may mau ("Win10" hoac "Win11")
+if (-not $OsFolder) { $OsFolder = if ([int](Get-CimInstance Win32_OperatingSystem).BuildNumber -ge 22000) { "Win11" } else { "Win10" } }
+$Remote = "Templates/$OsFolder"
 $zipFile = "C:\Soft\GPO-Zip\GPO-Template.zip"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

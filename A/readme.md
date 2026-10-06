@@ -13,8 +13,8 @@ Các máy khác dùng Action1 **tải ZIP mẫu đó về và deploy** bằng LG
  T1_Backup_Template.ps1  ──zip──►  (C:\Soft\GPO-Zip\GPO-Template.zip)
       │
       ▼
- T2_Upload_Template.ps1  ───────►  Templates/GPO-Template.zip
-                                   Templates/GPO-Template.zip.sha256 ──►  T3_Deploy_Template.ps1
+ T2_Upload_Template.ps1  ───────►  Templates/Win11/GPO-Template.zip
+                                   Templates/Win11/GPO-Template.zip.sha256 ──►  T3_Deploy_Template.ps1
                                                                            (tải, kiểm SHA256, backup hiện trạng,
                                                                             xoá policy cũ, LGPO /g, gpupdate)
                                                                           T4_Rollback_PreDeploy.ps1 (nếu cần)
@@ -29,8 +29,9 @@ Các máy khác dùng Action1 **tải ZIP mẫu đó về và deploy** bằng LG
 | `T1_Backup_Template.ps1` | Laptop mẫu 655 (Admin) | `LGPO /b` Local Policy + copy GPO riêng *Non-Administrators / Administrators* + `manifest.json` → nén `C:\Soft\GPO-Zip\GPO-Template.zip` và `.sha256` |
 | `T1a_Backup_LGPO.ps1` → `T1b_Extra_Manifest.ps1` → `T1c_Zip_Template.ps1` | Laptop mẫu 655 | **T1 tách làm 3 bước để debug** (chạy lần lượt): T1a = `LGPO /b`; T1b = copy GPO Non-Admin/Admin + `manifest.json`; T1c = nén zip bằng .NET `ZipFile` + SHA256 và liệt kê nội dung zip. Mỗi script in rõ bước, dòng lỗi và stack trace |
 | `L1a_Run_T1a.ps1`, `L1b_Run_T1b.ps1`, `L1c_Run_T1c.ps1` | Action1 (laptop mẫu) | **Launcher mỏng**: mỗi file tải `T1a`/`T1b`/`T1c` từ GitHub (`raw.githubusercontent.com`, có `?t=` tránh cache) rồi chạy, exit code chuyển thẳng cho Action1. Dán 3 file này vào Action1 thay vì dán nguyên T1x; sửa script trên repo là Action1 tự dùng bản mới. **Mặc định `$Branch = "main"`** |
-| `T2_Upload_Template.ps1` | Laptop mẫu 655, **chạy tay** | Đẩy ZIP + SHA256 lên `Templates/` của repo qua GitHub API. Cần PAT (Contents: Read & write) – nhập khi được hỏi hoặc đặt `$env:GITHUB_TOKEN`. Không chạy qua Action1 |
-| `T3_Deploy_Template.ps1` | Máy đích, Action1 | Cài LGPO nếu thiếu → tải ZIP + **kiểm SHA256** → backup hiện trạng `PreDeploy-*` → xoá `Registry.pol` cũ → `LGPO /g` + `/un` + `/ua` → `gpupdate`. ZIP không đổi so với lần trước thì bỏ qua |
+| `L3_Run_T3.ps1`, `L4_Run_T4.ps1` | Action1 (máy đích) | Launcher cho `T3` (deploy mẫu) và `T4` (rollback), cùng khuôn L1a/b/c. **Test 1–2 máy trước** khi áp cho cả đội |
+| `T2_Upload_Template.ps1` | Laptop mẫu 655, **chạy tay** | Đẩy ZIP + SHA256 lên `Templates/Win10/` hoặc `Templates/Win11/` (tự nhận theo build Windows của máy mẫu: build ≥ 22000 = Win11) qua GitHub API. Cần PAT (Contents: Read & write) – nhập khi được hỏi hoặc đặt `$env:GITHUB_TOKEN`. Không chạy qua Action1 |
+| `T3_Deploy_Template.ps1` | Máy đích, Action1 | Cài LGPO nếu thiếu → tải ZIP đúng bản OS (`Templates/Win10` hoặc `Win11`, tự nhận theo build; đặt `$OsFolder` để ép) + **kiểm SHA256** → backup hiện trạng `PreDeploy-*` → xoá `Registry.pol` cũ → `LGPO /g` + `/un` + `/ua` → `gpupdate`. ZIP không đổi so với lần trước thì bỏ qua |
 | `T4_Rollback_PreDeploy.ps1` | Máy đích, Action1 | Khôi phục về bản `PreDeploy-*` mới nhất (trước lần T3 gần nhất) |
 
 Cả 4 script **độc lập** (dán thẳng vào Action1 hoặc chạy qua launcher), log tiếng Anh/không dấu để Action1 hiển thị ổn định.
@@ -51,7 +52,7 @@ Nếu T1 báo lỗi, log in `FAILED at step [1/3 | 2/3 | 3/3]` kèm dòng gây l
 
 1. **Laptop mẫu**: chạy `Part1` + `P0` (LGPO + ADMX), cấu hình tay bằng `gpedit.msc` / `secpol.msc` (và MMC cho Non-Administrators nếu cần ẩn ổ C), test kỹ. Riêng SRP xem mục [SRP](#srp-software-restriction-policies-cho-non-administrators).
 2. Chạy `T1_Backup_Template.ps1` → kiểm tra `C:\Soft\GPO-Zip\GPO-Template.zip`.
-3. Chạy `T2_Upload_Template.ps1` → ZIP lên `Templates/` (hoặc upload tay qua web rồi nhớ upload cả `.sha256`).
+3. Chạy `T2_Upload_Template.ps1` → ZIP lên `Templates/Win10/` hoặc `Templates/Win11/` (hoặc upload tay qua web rồi nhớ upload cả `.sha256`).
 4. **Thử 1–2 máy** bằng `T3` trước, kiểm tra, rồi mới tạo Action1 policy/automation cho cả đội. Tách Endpoint Group Member / Guest nếu cần.
 5. Có sự cố → `T4` trên máy đó.
 
@@ -80,6 +81,12 @@ Cấu hình bằng MMC (đã xác nhận có mục này trong Non-Administrators
 6. Chạy `T1`; kiểm tra `Extra\NonAdmin-Registry.pol` trong ZIP có key `Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers`.
 
 Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đăng nhập lại) lần đầu** để SRP có hiệu lực. Không chạy `SRP.ps1` song song; nếu HKLM và HKCU cùng định nghĩa SRP, tôi nhớ machine-level được ưu tiên (chưa kiểm chứng) – nên chỉ giữ một nguồn.
+
+## So sánh nội dung template (CSV)
+
+`Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Note 1 | Note 2`. Cột `Win 11` / `Win10` là giá trị trong ZIP tương ứng (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
+
+Cập nhật sau khi upload ZIP mới (Win10 hoặc Win11): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
 
 ## Đường dẫn trên máy
 
