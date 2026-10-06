@@ -6,7 +6,9 @@ $ErrorActionPreference = "Stop"
 
 # ===== CAU HINH =====
 $Owner  = "JaxVN"; $Repo = "LGPO"; $Branch = "main"
-$Remote = "Templates/Win11/GPO-Template.zip"
+$OsFolder = ""          # de trong = tu nhan theo may dich ("Win10" hoac "Win11", build >= 22000 la Win11)
+if (-not $OsFolder) { $OsFolder = if ([int](Get-CimInstance Win32_OperatingSystem).BuildNumber -ge 22000) { "Win11" } else { "Win10" } }
+$Remote = "Templates/$OsFolder/GPO-Template.zip"
 $Token  = ""            # Chi can neu repo PRIVATE (PAT quyen Contents: Read). Repo public de trong.
 $Force  = $false
 $CleanBeforeApply = $true   # xoa Registry.pol cu truoc khi import -> may dich giong het may mau
