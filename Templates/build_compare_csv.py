@@ -117,15 +117,20 @@ def audit_rows(path, text):
     return rows
 
 
+DISP = {}
+
+
 def read_zip(zpath):
+    disp = DISP
     """-> {(item_type, path, section, name): (type, value)} va thu tu dong"""
     items, order = {}, []
 
     def add(rows):
         for t, p, s, n, ty, v in rows:
-            k = (t, p, s, n)
+            k = (t, p, s.lower(), n.lower())      # registry khong phan biet hoa/thuong
             if k not in items:
                 order.append(k)
+                disp[k] = (s, n)
             items[k] = (ty, v)
 
     with zipfile.ZipFile(zpath) as z:
@@ -155,7 +160,7 @@ def main():
     if OUT.exists():
         with open(OUT, encoding="utf-8-sig", newline="") as f:
             for r in csv.DictReader(f):
-                old_notes[(r["Item type"], r["Path in zip"], r["Section / Registry key"], r["Name"])] = (r["Note 1"], r["Note 2"])
+                old_notes[(r["Item type"], r["Path in zip"], r["Section / Registry key"].lower(), r["Name"].lower())] = (r["Note 1"], r["Note 2"])
 
     data, order = {}, []
     for label, zpath in SOURCES:
@@ -176,7 +181,8 @@ def main():
             v11, v10 = data["Win 11"].get(k), data["Win10"].get(k)
             ty = (v11 or v10)[0]
             n1, n2 = old_notes.get(k, ("", ""))
-            w.writerow([k[0], k[1], k[2], k[3], ty, v11[1] if v11 else "", v10[1] if v10 else "", n1, n2])
+            sec, nm = DISP[k]
+            w.writerow([k[0], k[1], sec, nm, ty, v11[1] if v11 else "", v10[1] if v10 else "", n1, n2])
     print(f"Wrote {OUT} ({len(order)} rows)")
 
 
