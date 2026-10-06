@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Tao Templates/Template-Compare.csv tu cac ZIP mau (Templates/Win11, Templates/Win10).
+"""Tao Templates/Template-Compare.csv tu cac ZIP mau (Templates/Win11, Templates/Win10, Templates/Domain).
 
-Moi dong = 1 file hoac 1 setting trong ZIP. Cot "Win 11" / "Win10" = gia tri trong ZIP tuong ung
+Moi dong = 1 file hoac 1 setting trong ZIP. Cot "Win 11" / "Win10" / "Domain" = gia tri trong ZIP tuong ung
 (trong = khong co). "Note 1" / "Note 2" do nguoi dung nhap tay - chay lai script se GIU NGUYEN
 note cu (khop theo Item type + Path + Section + Name).
 
@@ -12,8 +12,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "Template-Compare.csv"
-SOURCES = [("Win 11", HERE / "Win11" / "GPO-Template.zip"), ("Win10", HERE / "Win10" / "GPO-Template.zip")]
-HEADER = ["Item type", "Path in zip", "Section / Registry key", "Name", "Type", "Win 11", "Win10", "Note 1", "Note 2"]
+SOURCES = [("Win 11", HERE / "Win11" / "GPO-Template.zip"), ("Win10", HERE / "Win10" / "GPO-Template.zip"), ("Domain", HERE / "Domain" / "GPO-Template.zip")]
+HEADER = ["Item type", "Path in zip", "Section / Registry key", "Name", "Type", "Win 11", "Win10", "Domain", "Note 1", "Note 2"]
 GUID = re.compile(r"\{[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}\}")
 REG_TYPES = {0: "REG_NONE", 1: "REG_SZ", 2: "REG_EXPAND_SZ", 3: "REG_BINARY", 4: "REG_DWORD", 7: "REG_MULTI_SZ", 11: "REG_QWORD"}
 SRP_PATH = re.compile(r"^(.*\\CodeIdentifiers\\(\d+)\\Paths)\\\{[0-9A-Fa-f-]{36}\}$", re.I)
@@ -178,11 +178,11 @@ def main():
         w = csv.writer(f)
         w.writerow(HEADER)
         for k in sorted(order, key=sort_key):
-            v11, v10 = data["Win 11"].get(k), data["Win10"].get(k)
-            ty = (v11 or v10)[0]
+            v11, v10, vd = data["Win 11"].get(k), data["Win10"].get(k), data["Domain"].get(k)
+            ty = (v11 or v10 or vd)[0]
             n1, n2 = old_notes.get(k, ("", ""))
             sec, nm = DISP[k]
-            w.writerow([k[0], k[1], sec, nm, ty, v11[1] if v11 else "", v10[1] if v10 else "", n1, n2])
+            w.writerow([k[0], k[1], sec, nm, ty, v11[1] if v11 else "", v10[1] if v10 else "", vd[1] if vd else "", n1, n2])
     print(f"Wrote {OUT} ({len(order)} rows)")
 
 

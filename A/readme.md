@@ -85,7 +85,7 @@ Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đ
 
 ## So sánh nội dung template (CSV)
 
-`Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Note 1 | Note 2`. Cột `Win 11` / `Win10` là giá trị trong ZIP tương ứng (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
+`Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (Win11, Win10 và Domain) (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Domain | Note 1 | Note 2`. Cột `Win 11` / `Win10` / `Domain` là giá trị trong ZIP tương ứng (`Templates/Win11`, `Win10`, `Domain`) (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
 
 Cập nhật sau khi upload ZIP mới (Win10 hoặc Win11): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
 
