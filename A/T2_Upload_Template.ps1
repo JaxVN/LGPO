@@ -4,14 +4,14 @@
 # Can GitHub token (fine-grained PAT): repo JaxVN/LGPO, quyen "Contents: Read and write".
 # Truyen token qua bien moi truong $env:GITHUB_TOKEN, hoac script se hoi (khong luu lai, khong in ra).
 #
-# Dich: Templates/GPO-Template.zip  va  Templates/GPO-Template.zip.sha256  (nhanh main)
+# Dich: Templates/Win11/GPO-Template.zip  va  Templates/Win11/GPO-Template.zip.sha256  (nhanh main)
 
 $ErrorActionPreference = "Stop"
 
 $Owner  = "JaxVN"
 $Repo   = "LGPO"
 $Branch = "main"
-$Remote = "Templates"
+$Remote = "Templates/Win11"
 $zipFile = "C:\Soft\GPO-Zip\GPO-Template.zip"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

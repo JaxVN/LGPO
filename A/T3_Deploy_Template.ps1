@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 # ===== CAU HINH =====
 $Owner  = "JaxVN"; $Repo = "LGPO"; $Branch = "main"
-$Remote = "Templates/GPO-Template.zip"
+$Remote = "Templates/Win11/GPO-Template.zip"
 $Token  = ""            # Chi can neu repo PRIVATE (PAT quyen Contents: Read). Repo public de trong.
 $Force  = $false
 $CleanBeforeApply = $true   # xoa Registry.pol cu truoc khi import -> may dich giong het may mau
