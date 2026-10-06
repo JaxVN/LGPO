@@ -4,11 +4,11 @@
 $ErrorActionPreference = "Stop"
 
 # ===== CAU HINH =====
-$Branch = "main"      # Chua merge PR thi doi thanh: claude/intelligent-brahmagupta-qxpagv
+$Branch = "claude/intelligent-brahmagupta-qxpagv"   # Sau khi merge PR vao main thi doi thanh "main"
 $ScriptPath = "A/T1a_Backup_LGPO.ps1"
 # ====================
 
-$url = "https://raw.githubusercontent.com/JaxVN/LGPO/$Branch/$ScriptPath?t=$([DateTime]::UtcNow.Ticks)"   # ?t= tranh cache CDN
+$url = "https://raw.githubusercontent.com/JaxVN/LGPO/${Branch}/${ScriptPath}?t=$([DateTime]::UtcNow.Ticks)"   # ?t= tranh cache CDN
 
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
