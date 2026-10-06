@@ -27,6 +27,7 @@ Các máy khác dùng Action1 **tải ZIP mẫu đó về và deploy** bằng LG
 | Script | Chạy ở đâu | Làm gì |
 |---|---|---|
 | `T1_Backup_Template.ps1` | Laptop mẫu 655 (Admin) | `LGPO /b` Local Policy + copy GPO riêng *Non-Administrators / Administrators* + `manifest.json` → nén `C:\Soft\GPO-Zip\GPO-Template.zip` và `.sha256` |
+| `T1a_Backup_LGPO.ps1` → `T1b_Extra_Manifest.ps1` → `T1c_Zip_Template.ps1` | Laptop mẫu 655 | **T1 tách làm 3 bước để debug** (chạy lần lượt): T1a = `LGPO /b`; T1b = copy GPO Non-Admin/Admin + `manifest.json`; T1c = nén zip bằng .NET `ZipFile` + SHA256 và liệt kê nội dung zip. Mỗi script in rõ bước, dòng lỗi và stack trace |
 | `T2_Upload_Template.ps1` | Laptop mẫu 655, **chạy tay** | Đẩy ZIP + SHA256 lên `Templates/` của repo qua GitHub API. Cần PAT (Contents: Read & write) – nhập khi được hỏi hoặc đặt `$env:GITHUB_TOKEN`. Không chạy qua Action1 |
 | `T3_Deploy_Template.ps1` | Máy đích, Action1 | Cài LGPO nếu thiếu → tải ZIP + **kiểm SHA256** → backup hiện trạng `PreDeploy-*` → xoá `Registry.pol` cũ → `LGPO /g` + `/un` + `/ua` → `gpupdate`. ZIP không đổi so với lần trước thì bỏ qua |
 | `T4_Rollback_PreDeploy.ps1` | Máy đích, Action1 | Khôi phục về bản `PreDeploy-*` mới nhất (trước lần T3 gần nhất) |
@@ -40,6 +41,10 @@ Cả 4 script **độc lập** (dán thẳng vào Action1 hoặc chạy qua laun
 | `C_Deloy LGPO Part1` | Tải & giải nén `LGPO.zip` vào `C:\Soft\SCT`. T3 đã tự cài LGPO nên không bắt buộc |
 | `C_Deloy_Policy_P0` | Launcher chạy `Grok/S000.ps1` (cài ADMX Office/OneDrive vào `C:\Windows\PolicyDefinitions`). **Chạy trên laptop mẫu trước khi cấu hình** để gpedit thấy template Office |
 | `C_Deloy_Policy_P2` | Backup cũ. **Bị thay bởi T1** (bản này chưa xử lý stderr của LGPO nên Action1 dễ báo Error) |
+
+### Debug T1
+
+Nếu T1 báo lỗi, log in `FAILED at step [1/3 | 2/3 | 3/3]` kèm dòng gây lỗi. Chạy lại riêng `T1a` → `T1b` → `T1c` để xem step nào hỏng. Trạng thái lưu ở `C:\Soft\GPO-Template-Build\` (thư mục `Backup\{GUID}`, `Extra\`, `manifest.json`); T1b/T1c đọc lại thư mục này nên không phải backup lại. Lưu ý: T1a **xóa** thư mục build cũ trước khi backup.
 
 ## Quy trình thực hiện
 

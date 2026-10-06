@@ -30,7 +30,7 @@ function Invoke-Lgpo {
     $p = Start-Process -FilePath $lgpoExe -ArgumentList $Arguments -Wait -PassThru -NoNewWindow `
          -RedirectStandardOutput $o -RedirectStandardError $e
     Get-Content $o, $e -ErrorAction SilentlyContinue | ForEach-Object { Write-Log "  [lgpo] $_" }
-    return $p.ExitCode
+    $script:LgpoExit = $p.ExitCode   # KHONG return: output cua ham se lan vao gia tri tra ve
 }
 
 function Get-Remote {
@@ -74,8 +74,8 @@ try {
     # 4. Backup hien trang truoc khi ap (cho T4 rollback)
     $pre = Join-Path $backupRoot "PreDeploy-$ts"
     New-Item -ItemType Directory -Path $pre -Force | Out-Null
-    $rc = Invoke-Lgpo @("/b", "`"$pre`"", "/n", "`"PreDeploy-$ts`"")
-    if ($rc -ne 0) { throw "Backup hien trang loi (exit $rc) - dung, chua thay doi gi" }
+    Invoke-Lgpo @("/b", "`"$pre`"", "/n", "`"PreDeploy-$ts`"")
+    if ($script:LgpoExit -ne 0) { throw "Backup hien trang loi (exit $script:LgpoExit) - dung, chua thay doi gi" }
     $gpu = "$env:SystemRoot\System32\GroupPolicyUsers"
     if (Test-Path $gpu) { Copy-Item $gpu (Join-Path $pre "GroupPolicyUsers") -Recurse -Force }
 
@@ -91,13 +91,13 @@ try {
 
     # 6. Ap dung
     Write-Log "Ap dung $($guid.Name)..."
-    $rc = Invoke-Lgpo @("/g", "`"$($guid.FullName)`"")
-    if ($rc -ne 0) { throw "LGPO /g loi, exit code $rc" }
+    Invoke-Lgpo @("/g", "`"$($guid.FullName)`"")
+    if ($script:LgpoExit -ne 0) { throw "LGPO /g loi, exit code $script:LgpoExit" }
 
     $na = Join-Path $ex "Extra\NonAdmin-Registry.pol"
     $ad = Join-Path $ex "Extra\Admin-Registry.pol"
-    if (Test-Path $na) { if ((Invoke-Lgpo @("/un", "`"$na`"")) -ne 0) { throw "LGPO /un loi" } }
-    if (Test-Path $ad) { if ((Invoke-Lgpo @("/ua", "`"$ad`"")) -ne 0) { throw "LGPO /ua loi" } }
+    if (Test-Path $na) { Invoke-Lgpo @("/un", "`"$na`""); if ($script:LgpoExit -ne 0) { throw "LGPO /un loi, exit code $script:LgpoExit" } }
+    if (Test-Path $ad) { Invoke-Lgpo @("/ua", "`"$ad`""); if ($script:LgpoExit -ne 0) { throw "LGPO /ua loi, exit code $script:LgpoExit" } }
 
     # 7. Cap nhat policy
     & gpupdate.exe /force 2>&1 | Out-Null

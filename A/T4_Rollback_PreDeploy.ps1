@@ -12,7 +12,7 @@ function Invoke-Lgpo {
     $p = Start-Process -FilePath $lgpoExe -ArgumentList $Arguments -Wait -PassThru -NoNewWindow `
          -RedirectStandardOutput $o -RedirectStandardError $e
     Get-Content $o, $e -ErrorAction SilentlyContinue | ForEach-Object { Write-Output "  [lgpo] $_" }
-    return $p.ExitCode
+    $script:LgpoExit = $p.ExitCode   # KHONG return: output cua ham se lan vao gia tri tra ve
 }
 
 try {
@@ -33,7 +33,8 @@ try {
     $gpu = "$env:SystemRoot\System32\GroupPolicyUsers"
     if (Test-Path $gpu) { Get-ChildItem $gpu -Recurse -File -Filter "Registry.pol" | Remove-Item -Force }
 
-    if ((Invoke-Lgpo @("/g", "`"$($guid.FullName)`"")) -ne 0) { throw "LGPO /g loi" }
+    Invoke-Lgpo @("/g", "`"$($guid.FullName)`"")
+    if ($script:LgpoExit -ne 0) { throw "LGPO /g loi, exit code $script:LgpoExit" }
 
     # Khoi phuc GPO rieng Administrators / Non-Administrators neu co
     $saved = Join-Path $pre.FullName "GroupPolicyUsers"
