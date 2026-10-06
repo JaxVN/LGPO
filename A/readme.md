@@ -82,6 +82,12 @@ Cấu hình bằng MMC (đã xác nhận có mục này trong Non-Administrators
 
 Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đăng nhập lại) lần đầu** để SRP có hiệu lực. Không chạy `SRP.ps1` song song; nếu HKLM và HKCU cùng định nghĩa SRP, tôi nhớ machine-level được ưu tiên (chưa kiểm chứng) – nên chỉ giữ một nguồn.
 
+## So sánh nội dung template (CSV)
+
+`Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Note 1 | Note 2`. Cột `Win 11` / `Win10` là giá trị trong ZIP tương ứng (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
+
+Cập nhật sau khi upload ZIP mới (Win10 hoặc Win11): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
+
 ## Đường dẫn trên máy
 
 | Mục | Đường dẫn |
