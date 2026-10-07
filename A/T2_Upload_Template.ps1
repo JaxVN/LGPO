@@ -5,17 +5,18 @@
 # Truyen token qua bien moi truong $env:GITHUB_TOKEN, hoac script se hoi (khong luu lai, khong in ra).
 #
 # Dich: Templates/<Win10|Win11>/GPO-Template.zip va .sha256 (nhanh main). Thu muc tu nhan theo build Windows cua may chay script
-#   (build >= 22000 = Win11, nguoc lai Win10). Muon ep: dat $OsFolder o duoi.
+#   (build >= 22000 = Win11, nguoc lai Win10). Muon ep: dat $env:LGPO_FOLDER. Zip khac: dat $env:LGPO_ZIP (vd T6: Domain-Effective.zip + folder Domain).
 
 $ErrorActionPreference = "Stop"
 
 $Owner  = "JaxVN"
 $Repo   = "LGPO"
 $Branch = "main"
-$OsFolder = ""    # de trong = tu nhan theo may mau ("Win10" hoac "Win11")
+$OsFolder = $env:LGPO_FOLDER    # de trong = tu nhan theo may mau ("Win10" hoac "Win11"); T6 dung "Domain"
+$ZipName  = if ($env:LGPO_ZIP) { $env:LGPO_ZIP } else { "GPO-Template.zip" }   # T6: "Domain-Effective.zip"
 if (-not $OsFolder) { $OsFolder = if ([int](Get-CimInstance Win32_OperatingSystem).BuildNumber -ge 22000) { "Win11" } else { "Win10" } }
 $Remote = "Templates/$OsFolder"
-$zipFile = "C:\Soft\GPO-Zip\GPO-Template.zip"
+$zipFile = Join-Path "C:\Soft\GPO-Zip" $ZipName
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -46,10 +47,10 @@ try {
     $headers = @{ Authorization = "Bearer $token"; "User-Agent" = "lgpo-template-upload"; Accept = "application/vnd.github+json" }
 
     $msg = "Update GPO template from $env:COMPUTERNAME - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-    Publish-RepoFile -LocalPath $zipFile            -RemotePath "$Remote/GPO-Template.zip"        -Message $msg -Headers $headers
-    Publish-RepoFile -LocalPath "$zipFile.sha256"   -RemotePath "$Remote/GPO-Template.zip.sha256" -Message $msg -Headers $headers
+    Publish-RepoFile -LocalPath $zipFile            -RemotePath "$Remote/$ZipName"        -Message $msg -Headers $headers
+    Publish-RepoFile -LocalPath "$zipFile.sha256"   -RemotePath "$Remote/$ZipName.sha256" -Message $msg -Headers $headers
 
-    Write-Output "OK. URL: https://raw.githubusercontent.com/$Owner/$Repo/$Branch/$Remote/GPO-Template.zip"
+    Write-Output "OK. URL: https://raw.githubusercontent.com/$Owner/$Repo/$Branch/$Remote/$ZipName"
     exit 0
 }
 catch {

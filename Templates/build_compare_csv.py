@@ -12,7 +12,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "Template-Compare.csv"
-SOURCES = [("Win 11", HERE / "Win11" / "GPO-Template.zip"), ("Win10", HERE / "Win10" / "GPO-Template.zip"), ("Domain", HERE / "Domain" / "GPO-Template.zip")]
+SOURCES = [("Win 11", [HERE / "Win11" / "GPO-Template.zip"]),
+           ("Win10", [HERE / "Win10" / "GPO-Template.zip"]),
+           ("Domain", [HERE / "Domain" / "GPO-Template.zip", HERE / "Domain" / "Domain-Effective.zip"])]   # Domain-Effective.zip: tao boi A/T6
 HEADER = ["Item type", "Path in zip", "Section / Registry key", "Name", "Type", "Win 11", "Win10", "Domain", "Note 1", "Note 2"]
 GUID = re.compile(r"\{[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}\}")
 REG_TYPES = {0: "REG_NONE", 1: "REG_SZ", 2: "REG_EXPAND_SZ", 3: "REG_BINARY", 4: "REG_DWORD", 7: "REG_MULTI_SZ", 11: "REG_QWORD"}
@@ -120,6 +122,76 @@ def audit_rows(path, text):
 DISP = {}
 
 
+def _reg_value(raw):
+    """Gia tri trong file .reg -> (type, value)"""
+    raw = raw.strip()
+    if raw.startswith('"'):
+        return "REG_SZ", raw[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+    if raw.startswith("dword:"):
+        return "REG_DWORD", str(int(raw[6:], 16))
+    m = re.match(r"hex\((\w+)\):(.*)", raw, re.S)
+    kind, hexs = (m.group(1), m.group(2)) if m else ("3", raw[4:] if raw.startswith("hex:") else raw)
+    try:
+        b = bytes(int(x, 16) for x in re.findall(r"[0-9A-Fa-f]{2}", hexs))
+    except ValueError:
+        return "REG_BINARY", hexs
+    if kind in ("1", "2", "7"):
+        txt = b.decode("utf-16le", "replace").rstrip("\x00")
+        return {"1": "REG_SZ", "2": "REG_EXPAND_SZ", "7": "REG_MULTI_SZ"}[kind], txt.replace("\x00", " | ")
+    if kind == "b" and len(b) >= 8:
+        return "REG_QWORD", str(int.from_bytes(b[:8], "little"))
+    return "REG_BINARY", b.hex()
+
+
+def reg_rows(path, text):
+    """Noi dung .reg (reg export) -> rows. Hive duoc bo; HKU\\<SID> chuan hoa thanh HKCU."""
+    rows, key = [], None
+    joined = re.sub(r"\\\r?\n\s*", "", text)          # noi dong tiep theo (hex co dau \ cuoi dong)
+    for line in joined.splitlines():
+        line = line.strip()
+        if not line or line.startswith("Windows Registry Editor"):
+            continue
+        m = re.match(r"^\[(.+)\]$", line)
+        if m:
+            key = re.sub(r"^HKEY_(LOCAL_MACHINE|USERS\\S-[\d-]+|CURRENT_USER)\\", "", m.group(1)); continue
+        if key is None or "=" not in line:
+            continue
+        name, raw = line.split("=", 1)
+        name = "(default)" if name == "@" else name.strip('"')
+        ty, val = _reg_value(raw)
+        rows.append(("Domain registry policy", path, key, name, ty, val))
+    return rows
+
+
+def gpresult_rows(path, data):
+    """gpresult /x: danh sach GPO da ap (ten + vi tri link). Doc 'long tolerant' vi schema thay doi theo ban Windows."""
+    import xml.etree.ElementTree as ET
+    rows = []
+    try:
+        root = ET.fromstring(data)
+    except ET.ParseError:
+        return rows
+    loc = lambda e: e.tag.split("}")[-1]
+    for res in root.iter():
+        if loc(res) not in ("ComputerResults", "UserResults"):
+            continue
+        scope = "Computer" if loc(res) == "ComputerResults" else "User"
+        for gpo in res:
+            if loc(gpo) != "GPO":
+                continue
+            kids = {loc(k): k for k in gpo}
+            name = (kids["Name"].text or "").strip() if "Name" in kids else ""
+            link = ""
+            if "Link" in kids:
+                for k in kids["Link"]:
+                    if loc(k) == "SOMPath":
+                        link = (k.text or "").strip()
+            enabled = (kids["Enabled"].text or "") if "Enabled" in kids else ""
+            if name:
+                rows.append(("Domain GPO applied", path, scope + " | " + link, name, "GPO", "Applied" if enabled.lower() != "false" else "Disabled"))
+    return rows
+
+
 def read_zip(zpath):
     disp = DISP
     """-> {(item_type, path, section, name): (type, value)} va thu tu dong"""
@@ -139,6 +211,8 @@ def read_zip(zpath):
             if info.is_dir():
                 continue
             p = norm_path(info.filename)
+            if zpath.name != "GPO-Template.zip":
+                p = zpath.stem + "/" + p          # vd Domain-Effective/HKLM-Policies.reg
             add([("File", p, "", "", "file", str(info.file_size))])
             data = z.read(info)
             low = p.lower()
@@ -148,6 +222,10 @@ def read_zip(zpath):
                 add(inf_rows(p, decode_text(data)))
             elif low.endswith("audit.csv"):
                 add(audit_rows(p, decode_text(data)))
+            elif low.endswith(".reg"):
+                add(reg_rows(p, decode_text(data)))
+            elif low.rsplit("/", 1)[-1].startswith("gpresult-") and low.endswith(".xml"):
+                add(gpresult_rows(p, data))
             elif low.endswith("manifest.json"):
                 for k, v in json.loads(decode_text(data)).items():
                     if k != "BackupId":
@@ -163,16 +241,18 @@ def main():
                 old_notes[(r["Item type"], r["Path in zip"], r["Section / Registry key"].lower(), r["Name"].lower())] = (r["Note 1"], r["Note 2"])
 
     data, order = {}, []
-    for label, zpath in SOURCES:
-        if zpath.exists():
-            data[label], o = read_zip(zpath)
-            order += [k for k in o if k not in order]
-        else:
-            print("Bo qua (chua co):", zpath, file=sys.stderr)
-            data[label] = {}
+    for label, zpaths in SOURCES:
+        data[label] = {}
+        for zpath in zpaths:
+            if zpath.exists():
+                items, o = read_zip(zpath)
+                data[label].update(items)
+                order += [k for k in o if k not in order]
+            else:
+                print("Bo qua (chua co):", zpath, file=sys.stderr)
 
     def sort_key(k):
-        return ({"File": 0, "Manifest": 1, "Setting": 2, "SRP path rule": 3, "Security": 4, "Audit": 5}.get(k[0], 9), k[1], k[2], k[3].lower())
+        return ({"File": 0, "Manifest": 1, "Domain GPO applied": 2, "Setting": 3, "SRP path rule": 4, "Security": 5, "Audit": 6, "Domain registry policy": 7}.get(k[0], 9), k[1], k[2], k[3].lower())
 
     with open(OUT, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
