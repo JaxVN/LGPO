@@ -28,6 +28,7 @@ Các máy khác dùng Action1 **tải ZIP mẫu đó về và deploy** bằng LG
 |---|---|---|
 | `T1_Backup_Template.ps1` | Laptop mẫu 655 (Admin) | `LGPO /b` Local Policy + copy GPO riêng *Non-Administrators / Administrators* + `manifest.json` → nén `C:\Soft\GPO-Zip\GPO-Template.zip` và `.sha256` |
 | `T1a_Backup_LGPO.ps1` → `T1b_Extra_Manifest.ps1` → `T1c_Zip_Template.ps1` | Laptop mẫu 655 | **T1 tách làm 3 bước để debug** (chạy lần lượt): T1a = `LGPO /b`; T1b = copy GPO Non-Admin/Admin + `manifest.json`; T1c = nén zip bằng .NET `ZipFile` + SHA256 và liệt kê nội dung zip. Mỗi script in rõ bước, dòng lỗi và stack trace |
+| `L1_Run_T1.ps1` | Action1 (laptop mẫu) | Launcher chạy cả `T1_Backup_Template.ps1` (3 bước trong 1 lần). Lỗi thì chạy riêng L1a/L1b/L1c |
 | `L1a_Run_T1a.ps1`, `L1b_Run_T1b.ps1`, `L1c_Run_T1c.ps1` | Action1 (laptop mẫu) | **Launcher mỏng**: mỗi file tải `T1a`/`T1b`/`T1c` từ GitHub (`raw.githubusercontent.com`, có `?t=` tránh cache) rồi chạy, exit code chuyển thẳng cho Action1. Dán 3 file này vào Action1 thay vì dán nguyên T1x; sửa script trên repo là Action1 tự dùng bản mới. **Mặc định `$Branch = "main"`** |
 | `L3_Run_T3.ps1`, `L4_Run_T4.ps1` | Action1 (máy đích) | Launcher cho `T3` (deploy mẫu) và `T4` (rollback), cùng khuôn L1a/b/c. **Test 1–2 máy trước** khi áp cho cả đội |
 | `T2_Upload_Template.ps1` | Laptop mẫu 655, **chạy tay** | Đẩy ZIP + SHA256 lên `Templates/Win10/` hoặc `Templates/Win11/` (tự nhận theo build Windows của máy mẫu: build ≥ 22000 = Win11) qua GitHub API. Cần PAT (Contents: Read & write) – nhập khi được hỏi hoặc đặt `$env:GITHUB_TOKEN`. Không chạy qua Action1 |
@@ -84,7 +85,7 @@ Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đ
 
 ## So sánh nội dung template (CSV)
 
-`Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Note 1 | Note 2`. Cột `Win 11` / `Win10` là giá trị trong ZIP tương ứng (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
+`Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (Win11, Win10 và Domain) (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Domain | Note 1 | Note 2`. Cột `Win 11` / `Win10` / `Domain` là giá trị trong ZIP tương ứng (`Templates/Win11`, `Win10`, `Domain`) (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
 
 Cập nhật sau khi upload ZIP mới (Win10 hoặc Win11): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
 
