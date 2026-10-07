@@ -14,11 +14,13 @@ HERE = Path(__file__).resolve().parent
 OUT = HERE / "Template-Compare.csv"
 SOURCES = [("Win 11", [HERE / "Win11" / "GPO-Template.zip"]),
            ("Win10", [HERE / "Win10" / "GPO-Template.zip"]),
-           ("Domain", [HERE / "Domain" / "GPO-Template.zip", HERE / "Domain" / "Domain-Effective.zip"])]   # Domain-Effective.zip: tao boi A/T6
+           ("Domain", [HERE / "Domain" / "GPO-Template.zip", HERE / "Domain" / "Domain-Effective.zip", HERE / "Domain" / "410" / "Domain-Effective.zip"])]   # Domain-Effective.zip: tao boi A/T6
 HEADER = ["Item type", "Path in zip", "Section / Registry key", "Name", "Type", "Win 11", "Win10", "Domain", "Note 1", "Note 2"]
 GUID = re.compile(r"\{[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}\}")
 REG_TYPES = {0: "REG_NONE", 1: "REG_SZ", 2: "REG_EXPAND_SZ", 3: "REG_BINARY", 4: "REG_DWORD", 7: "REG_MULTI_SZ", 11: "REG_QWORD"}
 SRP_PATH = re.compile(r"^(.*\\CodeIdentifiers\\(\d+)\\Paths)\\\{[0-9A-Fa-f-]{36}\}$", re.I)
+REG_PATH = "Registry policy (moi nguon)"
+SENSITIVE = re.compile(r"tenantassociationkey|loggedinuser|token|secret", re.I)
 SRP_LEVEL = {"0": "Disallowed", "262144": "Unrestricted", "131072": "Basic User", "65536": "Constrained"}
 
 
@@ -82,11 +84,12 @@ def pol_rows(path, data):
             d = srp.setdefault(key, {"base": m.group(1), "lvl": m.group(2)})
             d[name] = val
         else:
-            rows.append(("Setting", path, key, name or "(key)", typ, val))
+            hive = "HKLM" if "/machine/" in path.lower() else "HKCU"      # Machine pol = HKLM; User/NonAdmin/Admin pol = HKCU
+            rows.append(("Registry policy", REG_PATH, hive + "\\" + key, name or "(key)", typ, val))
     for key, d in srp.items():
         info = SRP_LEVEL.get(d["lvl"], d["lvl"])
         desc = d.get("Description", "")
-        rows.append(("SRP path rule", path, d["base"], d.get("ItemData", ""), "SRP path rule", info + (" - " + desc if desc else "")))
+        rows.append(("SRP path rule", "SRP path rules (moi nguon)", "Level " + info, d.get("ItemData", ""), "SRP path rule", desc or "x"))
     return rows
 
 
@@ -145,7 +148,7 @@ def _reg_value(raw):
 
 def reg_rows(path, text):
     """Noi dung .reg (reg export) -> rows. Hive duoc bo; HKU\\<SID> chuan hoa thanh HKCU."""
-    rows, key = [], None
+    rows, key, srp = [], None, {}
     joined = re.sub(r"\\\r?\n\s*", "", text)          # noi dong tiep theo (hex co dau \ cuoi dong)
     for line in joined.splitlines():
         line = line.strip()
@@ -159,7 +162,20 @@ def reg_rows(path, text):
         name, raw = line.split("=", 1)
         name = "(default)" if name == "@" else name.strip('"')
         ty, val = _reg_value(raw)
-        rows.append(("Domain registry policy", path, key, name, ty, val))
+        if SENSITIVE.search(name) or val.startswith("eyJ"):
+            val = "(redacted)"                     # token / tai khoan dang nhap - khong dua vao CSV
+        elif len(val) > 200:
+            val = val[:120] + " ...(%d chars)" % len(val)
+        m = SRP_PATH.match(key)
+        if m:
+            d = srp.setdefault(key, {"lvl": m.group(2)})
+            d[name] = val
+            continue
+        hive = "HKCU" if path.lower().rsplit("/", 1)[-1].startswith("hkcu") else "HKLM"
+        rows.append(("Registry policy", REG_PATH, hive + "\\" + (("Software" + key[8:]) if key.upper().startswith("SOFTWARE\\") else key), name, ty, val))
+    for key, d in srp.items():
+        info = SRP_LEVEL.get(d["lvl"], d["lvl"])
+        rows.append(("SRP path rule", "SRP path rules (moi nguon)", "Level " + info, d.get("ItemData", ""), "SRP path rule", d.get("Description", "") or "x"))
     return rows
 
 
@@ -187,8 +203,10 @@ def gpresult_rows(path, data):
                     if loc(k) == "SOMPath":
                         link = (k.text or "").strip()
             enabled = (kids["Enabled"].text or "") if "Enabled" in kids else ""
+            denied = (kids["AccessDenied"].text or "").lower() == "true" if "AccessDenied" in kids else False
             if name:
-                rows.append(("Domain GPO applied", path, scope + " | " + link, name, "GPO", "Applied" if enabled.lower() != "false" else "Disabled"))
+                status = "Denied (security filter)" if denied else ("Applied" if enabled.lower() == "true" else ("Disabled" if enabled.lower() == "false" else "No access to GPO (name is GUID)"))
+                rows.append(("Domain GPO applied", path, scope + " | " + link, name, "GPO", status))
     return rows
 
 
@@ -228,7 +246,7 @@ def read_zip(zpath):
                 add(gpresult_rows(p, data))
             elif low.endswith("manifest.json"):
                 for k, v in json.loads(decode_text(data)).items():
-                    if k != "BackupId":
+                    if k not in ("BackupId", "User"):
                         add([("Manifest", p, "", k, "info", str(v))])
     return items, order
 
@@ -252,7 +270,7 @@ def main():
                 print("Bo qua (chua co):", zpath, file=sys.stderr)
 
     def sort_key(k):
-        return ({"File": 0, "Manifest": 1, "Domain GPO applied": 2, "Setting": 3, "SRP path rule": 4, "Security": 5, "Audit": 6, "Domain registry policy": 7}.get(k[0], 9), k[1], k[2], k[3].lower())
+        return ({"File": 0, "Manifest": 1, "Domain GPO applied": 2, "Registry policy": 3, "SRP path rule": 4, "Security": 5, "Audit": 6}.get(k[0], 9), k[1], k[2], k[3].lower())
 
     with open(OUT, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)

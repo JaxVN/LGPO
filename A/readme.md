@@ -88,7 +88,7 @@ Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đ
 
 `Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (Win11, Win10 và Domain) (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Domain | Note 1 | Note 2`. Cột `Win 11` / `Win10` / `Domain` là giá trị trong ZIP tương ứng (`Templates/Win11`, `Win10`, `Domain`) (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
 
-Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Settings) và `Templates/Domain/Domain-Effective.zip` (T6: GPO đã ap, registry policy domain; item type `Domain GPO applied` / `Domain registry policy`). Cập nhật sau khi upload ZIP mới (Win10, Win11 hoặc Domain): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
+Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Settings) và `Templates/Domain/Domain-Effective.zip` (T6: GPO đã ap, registry policy domain; item type `Domain GPO applied` / `Registry policy`; token/tài khoản đăng nhập trong `.reg` được thay bằng `(redacted)`). Mọi registry policy (từ `.pol` của template và `.reg` của máy domain) dùng chung item type `Registry policy`, Section có tiền tố hive `HKLM\` / `HKCU\`; rule SRP gom chung item type `SRP path rule` để so sánh giữa các nguồn. Cập nhật sau khi upload ZIP mới (Win10, Win11 hoặc Domain): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
 
 ## Đường dẫn trên máy
 
