@@ -1,0 +1,7 @@
+; Go bo SRP cua nhom Non-Administrators (rollback cua SRP-NonAdmin-lgpo.txt)
+; LGPO.exe /t "<duong dan>\SRP-NonAdmin-remove-lgpo.txt"  roi  gpupdate /force  va khoi dong lai
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers
+*
+CLEAR
