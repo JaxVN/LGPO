@@ -115,6 +115,10 @@ Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Set
 
 Thư mục [`Regedit/`](../Regedit/README.md) chứa các file `.reg` nhập trực tiếp vào registry (không qua PowerShell/Local GPO): OneDrive `AllowTenantList` (6 tenant) và `TenantAutoMount` (14 thư viện), kèm file gỡ.
 
+## Policy OneDrive bằng LGPO text
+
+[`Policies/OneDrive-Machine-lgpo.txt`](../Policies/README.md): `AllowTenantList` (6 tenant) + `TenantAutoMount` (14 thư viện) + `EnableSyncAdminReports`. Áp bằng `LGPO.exe /t` lên máy mẫu để vào Local GPO (T1 backup được), thay cho file `.reg` ghi thẳng registry.
+
 ## Việc cần làm sau (backlog)
 
 - [ ] **Chuyển repo sang private** (hiện đang public để develop). Trước khi chuyển: `T3`/launcher cần `$Token` (PAT fine-grained, Contents: Read-only) hoặc tách `Templates/` sang repo private riêng. Lưu ý các file nhạy cảm đã nằm trong lịch sử git (`Templates/Domain/*` có tên máy/GPO/OU/IP nội bộ, `gpresult-*.html`, `HKLM-Policies.reg`).
