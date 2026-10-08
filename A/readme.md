@@ -111,6 +111,10 @@ Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Set
 - `Policies/NonAdmin-Registry.pol` hiện trong repo mới có `NoDrives` + vài key certificate, **chưa có SRP**; ZIP mới từ T1 sẽ chứa cả hai sau khi cấu hình xong.
 - Còn lại chưa làm: upload backup định kỳ lên SharePoint và restore từ SharePoint (`Grok/S02`, `Grok/S03`).
 
+## Cấu hình bằng file `.reg`
+
+Thư mục [`Regedit/`](../Regedit/README.md) chứa các file `.reg` nhập trực tiếp vào registry (không qua PowerShell/Local GPO): OneDrive `AllowTenantList` (6 tenant) và `TenantAutoMount` (14 thư viện), kèm file gỡ.
+
 ## Việc cần làm sau (backlog)
 
 - [ ] **Chuyển repo sang private** (hiện đang public để develop). Trước khi chuyển: `T3`/launcher cần `$Token` (PAT fine-grained, Contents: Read-only) hoặc tách `Templates/` sang repo private riêng. Lưu ý các file nhạy cảm đã nằm trong lịch sử git (`Templates/Domain/*` có tên máy/GPO/OU/IP nội bộ, `gpresult-*.html`, `HKLM-Policies.reg`).
