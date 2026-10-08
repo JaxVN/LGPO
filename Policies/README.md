@@ -6,7 +6,7 @@
 | `Machine-registry.pol` | Registry.pol mức máy (đang trống) |
 | `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 39 rule Unrestricted + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
-| `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện `H-*`) |
+| `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện, tên giá trị dạng `Ke_toan - Documents`) |
 
 ## Áp `OneDrive-Machine-lgpo.txt` lên máy mẫu (CMD Administrator)
 

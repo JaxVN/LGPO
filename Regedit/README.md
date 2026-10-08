@@ -5,7 +5,7 @@ File `.reg` lấy từ máy **STCD00558** (bản export của key đang chạy t
 | File | Tác dụng | Số giá trị |
 |---|---|---|
 | `OneDrive-AllowTenantList.reg` | Chỉ cho OneDrive sync tài khoản của 6 tenant (KIA + 5 tenant Guest) – policy *Allow syncing OneDrive accounts for only specific organizations* | 6 |
-| `OneDrive-TenantAutoMount.reg` | Tự mount 14 thư viện SharePoint `H-*` – policy *Configure team site libraries to sync automatically* | 14 |
+| `OneDrive-TenantAutoMount.reg` | Tự mount 14 thư viện SharePoint (site `H-*`, tên giá trị dạng `Ke_toan - Documents`) – policy *Configure team site libraries to sync automatically* | 14 |
 | `OneDrive-Remove.reg` | Gỡ cả hai policy trên (rollback) | – |
 
 Mỗi file bắt đầu bằng dòng `[-HKEY_...]` (xóa key cũ) rồi tạo lại key, nên **chạy lại nhiều lần an toàn** và giá trị không còn trong danh sách sẽ bị xóa.
