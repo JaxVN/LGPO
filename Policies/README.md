@@ -4,7 +4,7 @@
 |---|---|
 | `NonAdmin-Registry.pol` | Registry.pol của nhóm Non-Administrators (bản cũ) |
 | `Machine-registry.pol` | Registry.pol mức máy (đang trống) |
-| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 37 rule Unrestricted + 1 Disallowed (MS Store). Lọc từ GPO domain (máy 410) |
+| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 39 rule Unrestricted + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
 | `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện `H-*`) |
 
@@ -79,3 +79,7 @@ C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\OneDrive-Machine-lgpo.txt"
 
 gpupdate /force
 ```
+
+## Rule Store: vì sao hẹp
+
+Rule Disallowed rộng `…\WindowsApps\Microsoft.WindowsStore*` đã **chặn nhầm `backgroundTaskHost.exe`** (sự kiện 866 lặp lại, kể cả khi có rule Unrestricted riêng cho nó) — tiến trình chạy tác vụ nền của ứng dụng Store, có thể ảnh hưởng slideshow màn hình khóa. Bản hiện tại chỉ chặn `WinStore.App.exe`; rule rộng nằm trong mục TUY CHON (comment) để tham khảo. Nếu Store vẫn mở được bằng user thường thì cần chỉnh lại rule.
