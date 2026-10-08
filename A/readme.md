@@ -119,6 +119,10 @@ Thư mục [`Regedit/`](../Regedit/README.md) chứa các file `.reg` nhập tr�
 
 [`Policies/OneDrive-Machine-lgpo.txt`](../Policies/README.md): `AllowTenantList` (6 tenant) + `TenantAutoMount` (14 thư viện) + `EnableSyncAdminReports`. Áp bằng `LGPO.exe /t` lên máy mẫu để vào Local GPO (T1 backup được), thay cho file `.reg` ghi thẳng registry.
 
+## Treeview
+
+Xem dạng cây (giống gpedit, có mở/đóng, tìm kiếm, lọc mục khác biệt): mở `docs/Template-Treeview.html` bằng trình duyệt; tạo lại bằng `python3 Templates/build_treeview.py` sau khi cập nhật CSV.
+
 ## Việc cần làm sau (backlog)
 
 - [ ] **Chuyển repo sang private** (hiện đang public để develop). Trước khi chuyển: `T3`/launcher cần `$Token` (PAT fine-grained, Contents: Read-only) hoặc tách `Templates/` sang repo private riêng. Lưu ý các file nhạy cảm đã nằm trong lịch sử git (`Templates/Domain/*` có tên máy/GPO/OU/IP nội bộ, `gpresult-*.html`, `HKLM-Policies.reg`).
