@@ -63,3 +63,19 @@ Mỗi lần SRP chặn một chương trình, Windows ghi **cảnh báo** vào A
 wevtutil qe Application "/q:*[System[Provider[@Name='Microsoft-Windows-SoftwareRestrictionPolicies']]]" /c:20 /f:text /rd:true
 ```
 Dòng `AttemptedPath` là chương trình bị chặn; thêm một rule `Unrestricted` cho đường dẫn đó vào `SRP-NonAdmin-lgpo.txt` nếu cần chạy. Cảnh báo của `StoreDesktopExtension.exe` (Microsoft Store) là bình thường vì Store bị tắt có chủ ý.
+
+## Tải và áp trực tiếp từ repo (CMD Administrator)
+
+`LGPO.exe /t` chỉ đọc file trên ổ đĩa, nên tải file về `C:\Soft\SCT` rồi áp. (Link trỏ nhánh làm việc; sau khi merge đổi `claude/intelligent-brahmagupta-qxpagv` thành `main`.)
+
+```bat
+:: SRP cho Non-Administrators
+curl -L -o "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/claude/intelligent-brahmagupta-qxpagv/Policies/SRP-NonAdmin-lgpo.txt"
+C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt"
+
+:: OneDrive (AllowTenantList + TenantAutoMount)
+curl -L -o "C:\Soft\SCT\OneDrive-Machine-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/claude/intelligent-brahmagupta-qxpagv/Policies/OneDrive-Machine-lgpo.txt"
+C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\OneDrive-Machine-lgpo.txt"
+
+gpupdate /force
+```
