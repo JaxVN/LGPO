@@ -52,7 +52,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{719755f7-d05a-5790-9566-c60eb9384a3f}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{eb17e952-5366-501d-a124-6c7b60743fe3}
@@ -72,7 +72,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{eb17e952-5366-501d-a124-6c7b60743fe3}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{33fdfdcc-43a3-55fe-9ef0-4e8b0b5ea2dc}
@@ -92,7 +92,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{33fdfdcc-43a3-55fe-9ef0-4e8b0b5ea2dc}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{bdee1397-f476-5bed-9d9a-034c6e3dc1c6}
@@ -112,7 +112,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{bdee1397-f476-5bed-9d9a-034c6e3dc1c6}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{6075c254-0d41-5601-89d2-220e943f43bb}
@@ -132,7 +132,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{6075c254-0d41-5601-89d2-220e943f43bb}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{56a4cd05-1ec3-59ca-9093-fe936da97f14}
@@ -152,7 +152,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{56a4cd05-1ec3-59ca-9093-fe936da97f14}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f5e203b0-2e75-5aea-bc52-20fb131794f1}
@@ -172,7 +172,87 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f5e203b0-2e75-5aea-bc52-20fb131794f1}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{e1b17879-9d1f-5f26-bf6e-81452fc41674}
+ItemData
+EXSZ:C:\\Windows\\System32\\backgroundTaskHost.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{e1b17879-9d1f-5f26-bf6e-81452fc41674}
+Description
+SZ:Windows background task host (can cho vi rule MS Store chan nham)
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{e1b17879-9d1f-5f26-bf6e-81452fc41674}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{e1b17879-9d1f-5f26-bf6e-81452fc41674}
+LastModified
+QWORD:134359086572341504
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5e3234f3-d6c8-565b-aa01-e8ab8a8fb37e}
+ItemData
+EXSZ:C:\\Windows\\System32\\BackgroundTransferHost.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5e3234f3-d6c8-565b-aa01-e8ab8a8fb37e}
+Description
+SZ:Windows background transfer host
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5e3234f3-d6c8-565b-aa01-e8ab8a8fb37e}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5e3234f3-d6c8-565b-aa01-e8ab8a8fb37e}
+LastModified
+QWORD:134359086572341504
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d13317df-f0f9-5d07-9706-9c506f87b8bb}
+ItemData
+EXSZ:C:\\Windows\\System32\\SecurityHealth\\*\\SecurityHealthHost.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d13317df-f0f9-5d07-9706-9c506f87b8bb}
+Description
+SZ:Windows Security
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d13317df-f0f9-5d07-9706-9c506f87b8bb}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d13317df-f0f9-5d07-9706-9c506f87b8bb}
+LastModified
+QWORD:134359086572341504
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{40d2d51c-a38d-5310-ac8f-83aae788b891}
+ItemData
+EXSZ:\\\\?\\C:\\Windows\\System32\\SecurityHealth\\*\\SecurityHealthHost.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{40d2d51c-a38d-5310-ac8f-83aae788b891}
+Description
+SZ:Windows Security (dang duong dan \?\)
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{40d2d51c-a38d-5310-ac8f-83aae788b891}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{40d2d51c-a38d-5310-ac8f-83aae788b891}
+LastModified
+QWORD:134359086572341504
 
 ; ===== Unrestricted: ung dung =====
 User:Non-Administrators
@@ -193,7 +273,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{432b7378-af97-512a-b86c-8aabc3f5ede5}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d9478530-7790-53ce-a254-302a20cada5a}
@@ -213,7 +293,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d9478530-7790-53ce-a254-302a20cada5a}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{c5589733-7bb2-5aef-8d27-a91d6e7ec9d5}
@@ -233,7 +313,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{c5589733-7bb2-5aef-8d27-a91d6e7ec9d5}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f093988d-a5f8-53e8-9c57-a11e97fed5c1}
@@ -253,7 +333,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f093988d-a5f8-53e8-9c57-a11e97fed5c1}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b1677d2b-1dcc-5fde-864d-f46218522a28}
@@ -273,7 +353,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b1677d2b-1dcc-5fde-864d-f46218522a28}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{73a6f180-3b98-5b67-8bb9-210617580cfa}
@@ -293,7 +373,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{73a6f180-3b98-5b67-8bb9-210617580cfa}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{c63bc538-5d58-5034-8940-230ca361f538}
@@ -313,7 +393,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{c63bc538-5d58-5034-8940-230ca361f538}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f38a54aa-d2a3-5517-a6b3-abef03a344ce}
@@ -333,7 +413,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f38a54aa-d2a3-5517-a6b3-abef03a344ce}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b028e95f-7a80-53a4-9ba4-163d0d4defa9}
@@ -353,7 +433,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b028e95f-7a80-53a4-9ba4-163d0d4defa9}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{274d134d-bad6-5dc5-8be9-38fdc3b246cb}
@@ -373,7 +453,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{274d134d-bad6-5dc5-8be9-38fdc3b246cb}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{e4a2be81-a73d-5f88-954b-c0566eb7df91}
@@ -393,7 +473,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{e4a2be81-a73d-5f88-954b-c0566eb7df91}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{c79b4bea-f528-5aec-862e-0f3df56ca333}
@@ -413,7 +493,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{c79b4bea-f528-5aec-862e-0f3df56ca333}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{4aad2f8b-b019-5e0b-9868-b63355ca4f7a}
@@ -433,7 +513,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{4aad2f8b-b019-5e0b-9868-b63355ca4f7a}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 ; ===== Unrestricted: FAST / FoxPro =====
 User:Non-Administrators
@@ -454,7 +534,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{de22b8a8-b054-551d-b74a-70a4fdef7919}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{91cfc11a-f9ed-5d6a-b0aa-aeb708d4b3dc}
@@ -474,7 +554,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{91cfc11a-f9ed-5d6a-b0aa-aeb708d4b3dc}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b177fa11-393f-51b5-8019-69fd533d288e}
@@ -494,7 +574,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b177fa11-393f-51b5-8019-69fd533d288e}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{3a77020b-075b-5ef8-978c-a2b919313e1a}
@@ -514,7 +594,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{3a77020b-075b-5ef8-978c-a2b919313e1a}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{7a9efef9-07ec-5d41-aa31-c3482741ff22}
@@ -534,7 +614,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{7a9efef9-07ec-5d41-aa31-c3482741ff22}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{293a592a-8eba-5632-b9bd-ff47c70f3b7f}
@@ -554,7 +634,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{293a592a-8eba-5632-b9bd-ff47c70f3b7f}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d511d351-41cb-56d6-b3dd-3a2e540cd5e2}
@@ -574,7 +654,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{d511d351-41cb-56d6-b3dd-3a2e540cd5e2}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b043ade7-f95d-55cc-87f8-bfe7562c0851}
@@ -594,7 +674,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b043ade7-f95d-55cc-87f8-bfe7562c0851}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{2337957b-761e-5ab8-98f7-8a42f31d42ca}
@@ -614,7 +694,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{2337957b-761e-5ab8-98f7-8a42f31d42ca}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{1fabe764-dbf9-5675-b6b8-3faa80df397f}
@@ -634,7 +714,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{1fabe764-dbf9-5675-b6b8-3faa80df397f}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{053e2c57-caa7-5a11-9d79-01d38e99a797}
@@ -654,7 +734,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{053e2c57-caa7-5a11-9d79-01d38e99a797}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{552e6499-3dbd-58e7-9063-c426f8eb67d8}
@@ -674,7 +754,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{552e6499-3dbd-58e7-9063-c426f8eb67d8}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{454fef09-cac9-522d-ab3d-133441f934a2}
@@ -694,7 +774,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{454fef09-cac9-522d-ab3d-133441f934a2}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 ; ===== Disallowed =====
 User:Non-Administrators
@@ -715,7 +795,7 @@ DWORD:0
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\0\Paths\{9d571cc1-610f-50e2-9e1c-550106edeb4f}
 LastModified
-QWORD:134359044536614288
+QWORD:134359086572341504
 
 ; ===== TUY CHON (dang tat) - bo dau ; o dau ca 4 dong cua moi khoi de bat =====
 ; --- RONG: cho chay moi thu tren Desktop - nen bo
@@ -737,7 +817,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{0a0b9cb3-838d-5fbb-bcdc-db205df59afe}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- RONG - bat neu OneDrive/Teams bi chan
 ; User:Non-Administrators
@@ -758,7 +838,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{9983c516-399f-5c5f-9d3d-cf7503880c09}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- RONG
 ; User:Non-Administrators
@@ -779,7 +859,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{370aa424-96dc-529d-bed1-5fef5c64822f}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- RONG
 ; User:Non-Administrators
@@ -800,7 +880,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{864ce32c-20a1-56a1-91e9-0dec5b612232}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- RONG
 ; User:Non-Administrators
@@ -821,7 +901,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f85828e3-3e86-579f-b265-c6e762d21cab}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- RONG: moi file sau 3 cap thu muc tren F:
 ; User:Non-Administrators
@@ -842,7 +922,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{13269efc-4d4c-5259-b765-0bfe7b35d183}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- Updater NSIS (thu muc Temp)
 ; User:Non-Administrators
@@ -863,7 +943,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{51c73853-f47f-5a81-9311-6be105f081c8}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- Khong ro muc dich (co tren domain)
 ; User:Non-Administrators
@@ -884,7 +964,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b911b85a-41b0-5858-a738-3f19220d33d4}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- Chi co y nghia khi co domain
 ; User:Non-Administrators
@@ -905,7 +985,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{debbde1f-1bdf-5440-9dc2-3b02abbb837a}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- Chi co y nghia khi co domain
 ; User:Non-Administrators
@@ -926,7 +1006,7 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{837b073c-1751-56e4-815e-9578c31314d8}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
 
 ; --- Chi co y nghia khi co domain
 ; User:Non-Administrators
@@ -947,4 +1027,4 @@ QWORD:134359044536614288
 ; User:Non-Administrators
 ; Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{dd08ae0d-40d9-50c1-8611-6510b17b6019}
 ; LastModified
-; QWORD:134359044536614288
+; QWORD:134359086572341504
