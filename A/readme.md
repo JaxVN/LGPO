@@ -110,3 +110,11 @@ Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Set
 - Bản này **chưa test trên Windows** (môi trường dựng script là Linux). Hãy thử trên 1 VM/máy test trước: kiểm `LGPO /b` tạo `{GUID}`, `/g` áp lại đúng, rollback hoạt động.
 - `Policies/NonAdmin-Registry.pol` hiện trong repo mới có `NoDrives` + vài key certificate, **chưa có SRP**; ZIP mới từ T1 sẽ chứa cả hai sau khi cấu hình xong.
 - Còn lại chưa làm: upload backup định kỳ lên SharePoint và restore từ SharePoint (`Grok/S02`, `Grok/S03`).
+
+## Việc cần làm sau (backlog)
+
+- [ ] **Chuyển repo sang private** (hiện đang public để develop). Trước khi chuyển: `T3`/launcher cần `$Token` (PAT fine-grained, Contents: Read-only) hoặc tách `Templates/` sang repo private riêng. Lưu ý các file nhạy cảm đã nằm trong lịch sử git (`Templates/Domain/*` có tên máy/GPO/OU/IP nội bộ, `gpresult-*.html`, `HKLM-Policies.reg`).
+- [ ] Báo cáo GPO dạng web: xuất `Get-GPOReport` (XML/HTML) từ DC → script chuyển sang Markdown có mục thu gọn, gom thành `docs/`.
+- [ ] Cột baseline Microsoft (Security Baseline xlsx) trong `Template-Compare.csv`.
+- [ ] Cập nhật Edge baseline (hiện v139) và các baseline mới của Security Compliance Toolkit.
+- [ ] Dựng SRP cho workgroup từ danh sách rule domain (lọc các path rộng, rule gắn tên người, file tạm).
