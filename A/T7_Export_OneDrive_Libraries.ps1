@@ -2,13 +2,10 @@
 # bang OneDrive -> xuat file LGPO text de ap len may khac bang:  LGPO.exe /t "<file>"
 # = policy "Configure team site libraries to sync automatically" (TenantAutoMount)
 #
-# Nguon du lieu (HKCU + %LOCALAPPDATA% cua user, nen phai chay duoi quyen user, OneDrive da dang nhap + da sync):
-#   HKCU\Software\Microsoft\OneDrive\Accounts\BusinessN\ScopeIdToMountPointPathCache : danh sach thu muc thu vien cua TUNG tai khoan
-#   HKCU\Software\SyncEngines\Providers\OneDrive\*  : WebUrl, IsFolderScope (chi dung khi MountPoint khop cache)
-#   %LOCALAPPDATA%\Microsoft\OneDrive\settings\BusinessN\ClientPolicy_<listId>_<siteId>.ini : ten file cho biet listId + siteId
-#   %LOCALAPPDATA%\Microsoft\OneDrive\settings\BusinessN\<cid>.ini : dong libraryScope (webId, tenantId neu co)
-# Nhieu tai khoan / nhieu to chuc: quet het, bo thu vien trung (vd KIA va KIA(1)), bo shortcut thu muc va OneDrive ca nhan.
-# Dong Status khac OK (MISSING / CHECK-TENANT) khong vao file .txt - sua trong CSV roi chay lai voi -FromCsv.
+# Nguon du lieu: %LOCALAPPDATA%\Microsoft\OneDrive\settings\BusinessN\<cid>.ini (cid lay tu HKCU\Software\Microsoft\OneDrive\Accounts\BusinessN),
+# cac dong libraryScope chua tenantId, siteId, webId, listId, webUrl va thu muc mount cua tung thu vien.
+# Chay duoi quyen USER dang dang nhap OneDrive (khong dung SYSTEM). Nhieu tai khoan / nhieu to chuc: quet het,
+# bo thu vien trung (vd KIA va KIA(1)), bo OneDrive ca nhan va thu vien chi sync thu muc con.
 #
 # Ket qua (mac dinh C:\Soft\OneDrive-Libraries):
 #   OneDrive-TenantAutoMount-lgpo.txt : file cho LGPO /t  (Computer hoac User, xem -Scope)
@@ -96,16 +93,6 @@ function Format-Guid {
     return ("{{{0}-{1}-{2}-{3}-{4}}}" -f $h.Substring(0,8), $h.Substring(8,4), $h.Substring(12,4), $h.Substring(16,4), $h.Substring(20,12))
 }
 
-function Get-SafeProps {
-    # Thuoc tinh cua key registry (bo PS*), bo qua gia tri nhay cam (token/cookie/secret/password)
-    param($Path)
-    $p = Get-ItemProperty -LiteralPath $Path -ErrorAction SilentlyContinue
-    if (-not $p) { return @() }
-    $p.PSObject.Properties | Where-Object { $_.Name -notlike 'PS*' } | ForEach-Object {
-        if ($_.Name -match 'token|cookie|secret|passw|ticket') { "$($_.Name)=<hidden>" } else { "$($_.Name)=$($_.Value)" }
-    }
-}
-
 try {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 
@@ -124,112 +111,44 @@ try {
     Write-Output "=== T7: quet thu vien SharePoint dang sync (user $env:USERNAME) ==="
     if ($env:USERNAME -like '*$') { throw "Dang chay bang tai khoan may (SYSTEM). Chay bang user dang dang nhap OneDrive." }
 
-    # ---- 1. Du lieu chung: Providers (URL cua thu vien), danh sach tai khoan ----
+    # ---- 1. Doc file <cid>.ini cua tung tai khoan OneDrive for Business ----
+    # Dong thu vien dang:
+    #   libraryScope = <n> <scopeKey> 5 "<site>" "<library>" <n> "<webUrl>" "<tenantId>" <siteId32> <webId32> <listId32> <ts> "<mountPath>" ...
+    # mountPath rong = chi sync thu muc con (libraryFolder), khong phai ca thu vien -> AutoMount khong ap dung.
     $raw = New-Object Collections.Generic.List[string]
-    $provRoot = "HKCU:\Software\SyncEngines\Providers\OneDrive"
-    $provs = @{}
-    if (Test-Path $provRoot) {
-        foreach ($k in Get-ChildItem $provRoot) {
-            $provs[$k.PSChildName] = Get-ItemProperty $k.PSPath
-            $raw.Add("### Provider $($k.PSChildName)")
-            foreach ($x in (Get-SafeProps $k.PSPath)) { $raw.Add("  $x") }
-        }
-    }
+    $accts = @()
     $acctRoot = "HKCU:\Software\Microsoft\OneDrive\Accounts"
     if (-not (Test-Path $acctRoot)) { throw "Khong co $acctRoot - OneDrive chua dang nhap tren user nay." }
     $accts = @(Get-ChildItem $acctRoot | Where-Object { $_.PSChildName -match '^Business\d+$' })
     if ($accts.Count -eq 0) { throw "Khong co tai khoan OneDrive for Business (BusinessN)." }
 
-    # ---- 2. Tung tai khoan: ScopeIdToMountPointPathCache (khoa -> thu muc) + ID tu file ini ----
-    # Luu y: key trong Providers co the bi 2 tai khoan ghi de nhau (cung scope+seq) -> ten thu muc lay tu cache cua TUNG tai khoan.
-    $out = @(); $skipped = 0
+    $rx = '^\s*libraryScope\s*=\s*\d+\s+(\S+)\s+\d+\s+"([^"]*)"\s+"([^"]*)"\s+\d+\s+"([^"]*)"\s+"([^"]*)"\s+([0-9a-fA-F]{32})\s+([0-9a-fA-F]{32})\s+([0-9a-fA-F]{32})\s+\d+\s+"([^"]*)"'
+    $out = @(); $skipFolder = 0; $skipPersonal = 0
     foreach ($a in $accts) {
         $p = Get-ItemProperty $a.PSPath
-        $tenant = ""
-        if ($p.ConfiguredTenantId) { $tenant = ([string]$p.ConfiguredTenantId).Trim('{','}').ToLower() }
-        Write-Output ("Tai khoan {0}: tenantId={1} email={2}" -f $a.PSChildName, $tenant, $p.UserEmail)
-        $raw.Add("### Account $($a.PSChildName) tenant=$tenant email=$($p.UserEmail)")
-        foreach ($x in (Get-SafeProps $a.PSPath)) { $raw.Add("  $x") }
-
-        $cachePath = Join-Path $a.PSPath "ScopeIdToMountPointPathCache"
-        $cache = @{}
-        if (Test-Path $cachePath) {
-            $cp = Get-ItemProperty $cachePath
-            foreach ($pp in $cp.PSObject.Properties) { if ($pp.Name -notlike 'PS*' -and $pp.Name -like '*+*') { $cache[$pp.Name] = [string]$pp.Value } }
+        Write-Output ("Tai khoan {0}: email={1} tenantId={2}" -f $a.PSChildName, $p.UserEmail, $p.ConfiguredTenantId)
+        $raw.Add("### Account $($a.PSChildName) email=$($p.UserEmail) tenant=$($p.ConfiguredTenantId) cid=$($p.cid)")
+        if (-not $p.cid) { Write-Output "  (khong co cid - bo qua)"; continue }
+        $ini = Join-Path $env:LOCALAPPDATA "Microsoft\OneDrive\settings\$($a.PSChildName)\$($p.cid).ini"
+        if (-not (Test-Path $ini)) { Write-Output "  (khong thay $ini - bo qua)"; continue }
+        $n = 0
+        foreach ($l in (Read-IniLines $ini)) {
+            if ($l -notmatch '^\s*(libraryScope|libraryFolder|AddedScope)\s*=') { continue }
+            $raw.Add($l)
+            if ($l -notmatch '^\s*libraryScope\s*=') { continue }
+            $m = [regex]::Match($l, $rx)
+            if (-not $m.Success) { Write-Output "  WARN: khong doc duoc dong: $($l.Substring(0, [Math]::Min(120, $l.Length)))"; continue }
+            $siteT = $m.Groups[2].Value; $libT = $m.Groups[3].Value; $url = $m.Groups[4].Value; $tenant = $m.Groups[5].Value.ToLower()
+            $mount = $m.Groups[9].Value
+            if ($url -match '-my\.sharepoint\.com' -or $libT -eq 'ODB') { $skipPersonal++; continue }
+            if (-not $mount) { $skipFolder++; continue }
+            $value = "tenantId=$tenant&siteId=$(Format-Guid $m.Groups[6].Value)&webId=$(Format-Guid $m.Groups[7].Value)&listId=$(Format-Guid $m.Groups[8].Value)&webUrl=$([uri]::EscapeDataString($url))&version=1"
+            $out += [pscustomobject]@{ Name = (ConvertTo-Ascii "$siteT - $libT"); Value = $value; Source = $mount; Status = "OK" }
+            $n++
         }
-        Write-Output "  Thu muc scope trong cache: $($cache.Count)"
-
-        $iniDir = Join-Path $env:LOCALAPPDATA "Microsoft\OneDrive\settings\$($a.PSChildName)"
-        if (-not (Test-Path $iniDir)) { Write-Output "  (khong co thu muc ini: $iniDir)"; $raw.Add("### (khong co thu muc ini $iniDir)"); continue }
-
-        # cap (listId, siteId) lay tu TEN file ClientPolicy_<listId>_<siteId>.ini
-        $siteSet = @{}; $listSet = @{}
-        foreach ($f in Get-ChildItem $iniDir -Filter 'ClientPolicy_*_*.ini' -ErrorAction SilentlyContinue) {
-            $m = [regex]::Match($f.Name, '^ClientPolicy_([0-9a-fA-F]{32})_([0-9a-fA-F]{32})\.ini$')
-            if ($m.Success) { $listSet[(Format-Guid $m.Groups[1].Value)] = $true; $siteSet[(Format-Guid $m.Groups[2].Value)] = $true }
-        }
-        Write-Output "  ClientPolicy (list,site): site=$($siteSet.Count) list=$($listSet.Count)"
-
-        # file ini cua tai khoan: <cid>.ini
-        $scopeLines = @()
-        foreach ($f in Get-ChildItem $iniDir -Filter '*.ini' -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\.ini$' }) {
-            $lines = @(Read-IniLines $f.FullName)
-            $raw.Add("### file $($f.Name) lines=$($lines.Count)")
-            foreach ($l in $lines) {
-                if ($l -match '(?i)token|cookie|secret|passw|ticket') { continue }
-                $t = if ($l.Length -gt 600) { $l.Substring(0,600) + '...' } else { $l }
-                $raw.Add("  $t")
-                if ($l -match '(?i)^\s*libraryScope\s*=') { $scopeLines += $l }
-            }
-        }
-        Write-Output "  Dong libraryScope: $($scopeLines.Count)"
-
-        foreach ($key in $cache.Keys) {
-            $mount = $cache[$key]
-            $pv = $provs[$key]
-            $pvOk = ($pv -and $pv.MountPoint -and ([string]$pv.MountPoint).ToLower() -eq $mount.ToLower())
-            if (-not $pvOk) { $pv = $null }
-            # Bo qua: shortcut thu muc (IsFolderScope) va tai khoan goc (mysite/personal)
-            if ($pv -and ($pv.IsFolderScope -eq 1 -or $pv.LibraryType -match 'mysite|personal')) { $skipped++; continue }
-            if ($mount -match '\\Shortcuts\\') { $skipped++; continue }
-
-            $name = ConvertTo-Ascii (Split-Path $mount -Leaf)
-            $source = $mount
-            $status = "OK"; $value = ""
-            $webUrlRaw = ""
-            if ($pv -and $pv.WebUrl) { $webUrlRaw = [string]$pv.WebUrl }
-
-            $line = $scopeLines | Where-Object { $_ -like "*$key*" -or $_.ToLower().Contains($mount.ToLower()) } | Select-Object -First 1
-            if (-not $line) { $status = "MISSING: khong thay dong libraryScope cho $key" }
-            else {
-                $mm = [regex]::Match($line, 'tenantId=([^&"\s]+)&siteId=([^&"\s]+)&webId=([^&"\s]+)&listId=([^&"\s]+)')
-                if ($mm.Success) {
-                    $t2 = $mm.Groups[1].Value.Trim('{','}').ToLower(); $sid = $mm.Groups[2].Value; $wid = $mm.Groups[3].Value; $lid = $mm.Groups[4].Value
-                } else {
-                    $g = @([regex]::Matches($line, $guidRx) | ForEach-Object { '{' + $_.Value.Trim('{','}').ToLower() + '}' } | Select-Object -Unique)
-                    $sid = $g | Where-Object { $siteSet.ContainsKey($_) } | Select-Object -First 1
-                    $lid = $g | Where-Object { $listSet.ContainsKey($_) } | Select-Object -First 1
-                    $rest = @($g | Where-Object { $_ -ne $sid -and $_ -ne $lid -and $_.Trim('{','}') -ne $tenant })
-                    $t2 = $tenant
-                    if ($rest.Count -ge 1) { $wid = $rest[0] }
-                    if ($rest.Count -ge 2) { $t2 = $rest[0].Trim('{','}'); $wid = $rest[1]; $status = "CHECK-TENANT: nhieu GUID du, doan tenantId=$t2" }
-                    if (-not $sid -or -not $lid -or -not $wid) { $status = "MISSING: GUID trong dong libraryScope khong du/khong khop ClientPolicy" }
-                }
-                if (-not $webUrlRaw) {
-                    $um = [regex]::Match($line, 'https?://[^\s"]+')
-                    if ($um.Success) { $webUrlRaw = $um.Value }
-                }
-                if ($status -notlike 'MISSING*') {
-                    if (-not $webUrlRaw) { $status = "MISSING: khong biet webUrl" }
-                    else {
-                        $value = "tenantId=$t2&siteId=$sid&webId=$wid&listId=$lid&webUrl=$([uri]::EscapeDataString($webUrlRaw))&version=1"
-                    }
-                }
-            }
-            $out += [pscustomobject]@{ Name = $name; Value = $value; Source = $source; Status = $status }
-        }
+        Write-Output "  Thu vien (mount day du): $n"
     }
-    Write-Output "Bo qua (shortcut thu muc / OneDrive ca nhan): $skipped | Thu vien SharePoint can xuat: $($out.Count)"
+    Write-Output "Bo qua: $skipPersonal OneDrive ca nhan, $skipFolder thu vien chi sync thu muc con (AutoMount khong ho tro)"
     if ($out.Count -eq 0) { [IO.File]::WriteAllLines($rawFile, $raw.ToArray()); throw "Khong tim thay thu vien SharePoint nao. Xem $rawFile" }
 
     # ---- 4. Kiem tra (nhieu tai khoan / nhieu to chuc) ----
@@ -247,8 +166,6 @@ try {
         foreach ($o in $g.Group) { $i++; if ($o -ne $g.Group[0]) { $o.Name = "$($o.Name)_$i"; Write-Output "WARN: trung ten '$($g.Name)' -> doi thanh '$($o.Name)'" } }
     }
     $ok = @($out | Where-Object { $_.Status -eq "OK" })
-    $webListKey = @($ok | Group-Object { ($_.Value -split '&')[2] + ($_.Value -split '&')[3] } | Where-Object { $_.Count -gt 1 })
-    foreach ($d in $webListKey) { Write-Output "WARN: $($d.Count) thu vien co CUNG webId+listId (hiem, nghi ID sai): $(($d.Group | ForEach-Object Name) -join ', ')" }
     foreach ($d in @($ok | Group-Object { ($_.Value -split '&')[4] } | Where-Object { $_.Count -gt 1 })) {
         Write-Output "WARN: $($d.Count) thu vien khac nhau cung webUrl (kiem tra lai, Providers co the ghi de): $(($d.Group | ForEach-Object Name) -join ', ')"
     }
