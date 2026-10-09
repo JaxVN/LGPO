@@ -555,6 +555,26 @@ Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{4aad2f8b
 LastModified
 QWORD:134359254487967440
 
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b67a5455-3c7f-5264-8c15-b050c79f6a2f}
+ItemData
+EXSZ:C:\\Users\\*\\AppData\\Local\\MicroSIP\\MicroSIP.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b67a5455-3c7f-5264-8c15-b050c79f6a2f}
+Description
+SZ:MicroSIP (SIP phone, cai theo user)
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b67a5455-3c7f-5264-8c15-b050c79f6a2f}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{b67a5455-3c7f-5264-8c15-b050c79f6a2f}
+LastModified
+QWORD:134359254487967440
+
 ; ===== Unrestricted: FAST / FoxPro =====
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{de22b8a8-b054-551d-b74a-70a4fdef7919}
