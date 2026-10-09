@@ -8,29 +8,41 @@
 # bo thu vien trung (vd KIA va KIA(1)), bo OneDrive ca nhan va thu vien chi sync thu muc con.
 #
 # Ket qua (mac dinh C:\Soft\OneDrive-Libraries):
-#   OneDrive-TenantAutoMount-lgpo.txt : file cho LGPO /t  (Computer hoac User, xem -Scope)
-#   OneDrive-Libraries.csv            : Name, Value, Source, Status  (sua Name trong CSV neu can, roi chay lai voi -FromCsv)
-#   OneDrive-Libraries-raw.txt        : dong libraryScope + Providers goc (de debug neu ID khong khop)
+#   OneDrive-TenantAutoMount-lgpo.txt            : Computer (mac dinh)            -> LGPO /t
+#   OneDrive-TenantAutoMount-NonAdmin-lgpo.txt   : -NonAdmin (User:Non-Administrators) -> LGPO /t
+#   OneDrive-TenantAutoMount-User-<ten>-lgpo.txt : -Scope "User:<ten tai khoan local>"
+#   OneDrive-Libraries.csv                       : Name, Value, Source, Status  (sua Name trong CSV neu can, roi chay lai voi -FromCsv)
+#   OneDrive-Libraries-raw.txt                   : cac dong libraryScope/libraryFolder/AddedScope goc (de debug)
+#   OneDrive-NotSupported.txt                    : thu muc con / shortcut dang sync ma AutoMount khong ap dung duoc
 #
 # Cach dung:
-#   .\T7_Export_OneDrive_Libraries.ps1                         # quet may nay
+#   .\T7_Export_OneDrive_Libraries.ps1                        # tat ca thu vien -> Computer (policy may)
+#   .\T7_Export_OneDrive_Libraries.ps1 -NonAdmin -ExcludeFile C:\Soft\SCT\OneDrive-Machine-lgpo.txt
+#         # CHI thu vien rieng cua user nay (bo cac thu vien public da co trong policy may) -> GPO Non-Administrators
+#   .\T7_Export_OneDrive_Libraries.ps1 -NonAdmin -ExcludeApplied   # nhu tren, nhung bo theo policy may DANG ap tren may nay (HKLM)
+#   .\T7_Export_OneDrive_Libraries.ps1 -Scope "User:ten_user"      # chi cho 1 tai khoan local
 #   .\T7_Export_OneDrive_Libraries.ps1 -FromCsv C:\Soft\OneDrive-Libraries\OneDrive-Libraries.csv   # tao lai .txt tu CSV da sua
-#   .\T7_Export_OneDrive_Libraries.ps1 -Scope User -NoClear    # ghi vao User Configuration, khong xoa gia tri cu
 # Ap tren may dich (Admin):
-#   LGPO.exe /t "C:\Soft\OneDrive-Libraries\OneDrive-TenantAutoMount-lgpo.txt" ; gpupdate /force
+#   LGPO.exe /t "C:\Soft\OneDrive-Libraries\OneDrive-TenantAutoMount-NonAdmin-lgpo.txt" ; gpupdate /force
 #   (roi thoat/mo lai OneDrive hoac dang xuat/dang nhap)
 
 param(
     [string]$OutDir  = "C:\Soft\OneDrive-Libraries",
-    [ValidateSet("Computer","User")][string]$Scope = "Computer",
+    [ValidatePattern('^(Computer|User|User:.+)$')][string]$Scope = "Computer",   # Computer | User | User:Non-Administrators | User:Administrators | User:<ten local>
+    [switch]$NonAdmin,         # = -Scope "User:Non-Administrators"
+    [string]$ExcludeFile = "", # file LGPO text hoac .reg co TenantAutoMount da ap (vd OneDrive-Machine-lgpo.txt): thu vien da co thi bo ra
+    [switch]$ExcludeApplied,   # bo cac thu vien da co trong policy may dang ap tren may nay (HKLM\...\TenantAutoMount)
     [switch]$NoClear,          # khong them khoi DELETEALLVALUES (giu cac gia tri TenantAutoMount co san tren may dich)
     [string]$FromCsv = ""      # bo qua buoc quet, doc CSV (cot Name, Value) de tao lai file .txt
 )
 
 $ErrorActionPreference = "Stop"
+if ($NonAdmin) { $Scope = "User:Non-Administrators" }
 
 $policyKey = "SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount"
-$txtFile   = Join-Path $OutDir "OneDrive-TenantAutoMount-lgpo.txt"
+$suffix    = switch -Regex ($Scope) { '^Computer$' { "" } '^User:Non-Administrators$' { "-NonAdmin" } '^User:Administrators$' { "-Admin" } '^User$' { "-User" } default { "-User-" + ($Scope.Substring(5) -replace '[^A-Za-z0-9._-]', '_') } }
+$txtFile   = Join-Path $OutDir "OneDrive-TenantAutoMount$suffix-lgpo.txt"
+$notesFile = Join-Path $OutDir "OneDrive-NotSupported.txt"
 $csvFile   = Join-Path $OutDir "OneDrive-Libraries.csv"
 $rawFile   = Join-Path $OutDir "OneDrive-Libraries-raw.txt"
 $guidRx    = '\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}?'
@@ -58,7 +70,7 @@ function Write-LgpoFile {
     param($Rows)   # doi tuong co .Name, .Value
     $nl = "`r`n"
     $sb = New-Object Text.StringBuilder
-    [void]$sb.Append("; OneDrive - Configure team site libraries to sync automatically ($($Rows.Count) thu vien) - $Scope Configuration" + $nl)
+    [void]$sb.Append("; OneDrive - Configure team site libraries to sync automatically ($($Rows.Count) thu vien) - muc tieu LGPO: $Scope" + $nl)
     [void]$sb.Append("; Ap bang:  LGPO.exe /t `"<duong dan>\OneDrive-TenantAutoMount-lgpo.txt`"" + $nl)
     [void]$sb.Append("; Nguon: may $env:COMPUTERNAME, user $env:USERNAME, ngay $(Get-Date -Format 'yyyy-MM-dd HH:mm') (T7_Export_OneDrive_Libraries.ps1)" + $nl + $nl)
     if (-not $NoClear) {
@@ -123,7 +135,7 @@ try {
     if ($accts.Count -eq 0) { throw "Khong co tai khoan OneDrive for Business (BusinessN)." }
 
     $rx = '^\s*libraryScope\s*=\s*\d+\s+(\S+)\s+\d+\s+"([^"]*)"\s+"([^"]*)"\s+\d+\s+"([^"]*)"\s+"([^"]*)"\s+([0-9a-fA-F]{32})\s+([0-9a-fA-F]{32})\s+([0-9a-fA-F]{32})\s+\d+\s+"([^"]*)"'
-    $out = @(); $skipFolder = 0; $skipPersonal = 0
+    $out = @(); $skipFolder = 0; $skipPersonal = 0; $notes = New-Object Collections.Generic.List[string]
     foreach ($a in $accts) {
         $p = Get-ItemProperty $a.PSPath
         Write-Output ("Tai khoan {0}: email={1} tenantId={2}" -f $a.PSChildName, $p.UserEmail, $p.ConfiguredTenantId)
@@ -135,13 +147,15 @@ try {
         foreach ($l in (Read-IniLines $ini)) {
             if ($l -notmatch '^\s*(libraryScope|libraryFolder|AddedScope)\s*=') { continue }
             $raw.Add($l)
+            if ($l -match '^\s*libraryFolder\s*=\s*\d+\s+\d+\s+\S+\s+\d+\s+"([^"]*)"') { $notes.Add("[$($a.PSChildName)] sync thu muc con: $($Matches[1])"); continue }
+            if ($l -match '^\s*AddedScope\s*=\s*\d+\s+\S+\s+\d+\s+"([^"]*)".*"([^"]*)"\s*$') { $notes.Add("[$($a.PSChildName)] shortcut: $($Matches[1]) $($Matches[2])"); continue }
             if ($l -notmatch '^\s*libraryScope\s*=') { continue }
             $m = [regex]::Match($l, $rx)
             if (-not $m.Success) { Write-Output "  WARN: khong doc duoc dong: $($l.Substring(0, [Math]::Min(120, $l.Length)))"; continue }
             $siteT = $m.Groups[2].Value; $libT = $m.Groups[3].Value; $url = $m.Groups[4].Value; $tenant = $m.Groups[5].Value.ToLower()
             $mount = $m.Groups[9].Value
             if ($url -match '-my\.sharepoint\.com' -or $libT -eq 'ODB') { $skipPersonal++; continue }
-            if (-not $mount) { $skipFolder++; continue }
+            if (-not $mount) { $skipFolder++; $notes.Add("[$($a.PSChildName)] chi sync thu muc con cua thu vien: $siteT - $libT ($url)"); continue }
             $value = "tenantId=$tenant&siteId=$(Format-Guid $m.Groups[6].Value)&webId=$(Format-Guid $m.Groups[7].Value)&listId=$(Format-Guid $m.Groups[8].Value)&webUrl=$([uri]::EscapeDataString($url))&version=1"
             $out += [pscustomobject]@{ Name = (ConvertTo-Ascii "$siteT - $libT"); Value = $value; Source = $mount; Status = "OK" }
             $n++
@@ -165,6 +179,24 @@ try {
         $i = 0
         foreach ($o in $g.Group) { $i++; if ($o -ne $g.Group[0]) { $o.Name = "$($o.Name)_$i"; Write-Output "WARN: trung ten '$($g.Name)' -> doi thanh '$($o.Name)'" } }
     }
+    # Bo thu vien da co trong policy may (public) de chi con thu vien rieng cua user
+    function Get-LibKey { param([string]$v) $m = [regex]::Match($v, 'siteId=([^&]+)&webId=([^&]+)&listId=([^&]+)'); if ($m.Success) { return ($m.Groups[1].Value + $m.Groups[2].Value + $m.Groups[3].Value).ToLower() } return "" }
+    $exclKeys = @{}
+    if ($ExcludeApplied) {
+        $mk = "HKLM:\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount"
+        if (Test-Path $mk) {
+            $mp = Get-ItemProperty $mk
+            foreach ($pp in $mp.PSObject.Properties) { if ($pp.Name -notlike 'PS*') { $k = Get-LibKey ([string]$pp.Value); if ($k) { $exclKeys[$k] = $true } } }
+        } else { Write-Output "WARN: khong co $mk tren may nay - -ExcludeApplied khong bo gi" }
+    }
+    if ($ExcludeFile) {
+        if (-not (Test-Path $ExcludeFile)) { throw "Khong thay -ExcludeFile: $ExcludeFile" }
+        foreach ($m in [regex]::Matches([IO.File]::ReadAllText($ExcludeFile), 'tenantId=[^"\s]+&version=1')) { $k = Get-LibKey $m.Value; if ($k) { $exclKeys[$k] = $true } }
+    }
+    if ($exclKeys.Count -gt 0) {
+        Write-Output "Danh sach loai tru (da co trong policy may): $($exclKeys.Count) thu vien"
+        foreach ($o in $out) { if ($o.Status -eq "OK" -and $exclKeys.ContainsKey((Get-LibKey $o.Value))) { $o.Status = "SKIP: da co trong policy may" } }
+    }
     $ok = @($out | Where-Object { $_.Status -eq "OK" })
     foreach ($d in @($ok | Group-Object { ($_.Value -split '&')[4] } | Where-Object { $_.Count -gt 1 })) {
         Write-Output "WARN: $($d.Count) thu vien khac nhau cung webUrl (kiem tra lai, Providers co the ghi de): $(($d.Group | ForEach-Object Name) -join ', ')"
@@ -180,7 +212,12 @@ try {
     $out | ForEach-Object { Write-Output ("  [{0}] {1}  <-  {2}" -f $_.Status, $_.Name, $_.Source) }
     Write-Output ""
 
-    if ($ok.Count -eq 0) { Write-Output "KHONG lay duoc ID thu vien nao. Gui file nay de chinh lai cach doc: $rawFile"; exit 2 }
+    if ($ok.Count -eq 0) {
+        if ($exclKeys.Count -gt 0) { Write-Output "Khong con thu vien rieng nao (tat ca da co trong policy may). Khong tao file .txt."; exit 0 }
+        Write-Output "KHONG lay duoc ID thu vien nao. Gui file nay de chinh lai cach doc: $rawFile"; exit 2
+    }
+    [IO.File]::WriteAllLines($notesFile, @($notes | Select-Object -Unique))
+    Write-Output "Khong ap duoc bang AutoMount (thu muc con / shortcut): $(@($notes | Select-Object -Unique).Count) muc -> $notesFile"
     Write-LgpoFile $ok
     Write-Output "OK: $($ok.Count)/$($out.Count) thu vien -> $txtFile"
     Write-Output "CSV: $csvFile | Raw: $rawFile"
