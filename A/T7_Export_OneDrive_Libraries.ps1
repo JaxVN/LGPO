@@ -196,12 +196,26 @@ try {
         $out += [pscustomobject]@{ Name = $name; Value = $value; Source = $pv.Url; Status = $status }
     }
 
-    # ---- 4. Kiem tra ----
-    $dupName = @($out | Group-Object Name | Where-Object { $_.Count -gt 1 })
-    foreach ($d in $dupName) { Write-Output "WARN: trung ten '$($d.Name)' ($($d.Count) thu vien) - sua Name trong CSV roi chay lai voi -FromCsv"; foreach ($o in $d.Group) { $o.Status = "DUP-NAME" } }
+    # ---- 4. Kiem tra (nhieu tai khoan / nhieu to chuc) ----
+    # Cung 1 thu vien co the hien o nhieu tai khoan (vd KIA va KIA(1)) -> bo ban trung (cung Value)
+    $seen = @{}; $uniq = @()
+    foreach ($o in $out) {
+        if ($o.Value -and $seen.ContainsKey($o.Value)) { Write-Output "Bo ban trung (da co trong danh sach): $($o.Name)"; continue }
+        if ($o.Value) { $seen[$o.Value] = $true }
+        $uniq += $o
+    }
+    $out = $uniq
+    # Khac thu vien nhung trung ten (vd 'Documents' o 2 to chuc) -> them hau to _2, _3 (ten gia tri policy phai duy nhat)
+    foreach ($g in @($out | Group-Object Name | Where-Object { $_.Count -gt 1 })) {
+        $i = 0
+        foreach ($o in $g.Group) { $i++; if ($o -ne $g.Group[0]) { $o.Name = "$($o.Name)_$i"; Write-Output "WARN: trung ten '$($g.Name)' -> doi thanh '$($o.Name)'" } }
+    }
     $ok = @($out | Where-Object { $_.Status -eq "OK" })
     $webListKey = @($ok | Group-Object { ($_.Value -split '&')[2] + ($_.Value -split '&')[3] } | Where-Object { $_.Count -gt 1 })
     foreach ($d in $webListKey) { Write-Output "WARN: $($d.Count) thu vien co CUNG webId+listId (hiem, nghi ID sai): $(($d.Group | ForEach-Object Name) -join ', ')" }
+    Write-Output ""
+    Write-Output "Tong ket theo to chuc (tenantId):"
+    $ok | Group-Object { ($_.Value -split '&')[0] } | ForEach-Object { Write-Output ("  {0} : {1} thu vien" -f $_.Name, $_.Count) }
 
     $out | Export-Csv -Path $csvFile -NoTypeInformation -Encoding UTF8
     [IO.File]::WriteAllLines($rawFile, $raw.ToArray())
