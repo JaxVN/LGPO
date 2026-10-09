@@ -21,6 +21,7 @@
 #         # CHI thu vien rieng cua user nay (bo cac thu vien public da co trong policy may) -> GPO Non-Administrators
 #   .\T7_Export_OneDrive_Libraries.ps1 -NonAdmin -ExcludeApplied   # nhu tren, nhung bo theo policy may DANG ap tren may nay (HKLM)
 #   .\T7_Export_OneDrive_Libraries.ps1 -Scope "User:ten_user"      # chi cho 1 tai khoan local
+#   .\T7_Export_OneDrive_Libraries.ps1 -NonAdmin -IncludeFolderLibs # them ca thu vien ma user chi sync 1 thu muc con (mount ca thu vien)
 #   .\T7_Export_OneDrive_Libraries.ps1 -FromCsv C:\Soft\OneDrive-Libraries\OneDrive-Libraries.csv   # tao lai .txt tu CSV da sua
 # Ap tren may dich (Admin):
 #   LGPO.exe /t "C:\Soft\OneDrive-Libraries\OneDrive-TenantAutoMount-NonAdmin-lgpo.txt" ; gpupdate /force
@@ -32,6 +33,7 @@ param(
     [switch]$NonAdmin,         # = -Scope "User:Non-Administrators"
     [string]$ExcludeFile = "", # file LGPO text hoac .reg co TenantAutoMount da ap (vd OneDrive-Machine-lgpo.txt): thu vien da co thi bo ra
     [switch]$ExcludeApplied,   # bo cac thu vien da co trong policy may dang ap tren may nay (HKLM\...\TenantAutoMount)
+    [switch]$IncludeFolderLibs,# them ca thu vien ma user chi sync thu muc con (AutoMount se mount CA thu vien, co the lon; nen bat Files On-Demand)
     [switch]$NoClear,          # khong them khoi DELETEALLVALUES (giu cac gia tri TenantAutoMount co san tren may dich)
     [string]$FromCsv = ""      # bo qua buoc quet, doc CSV (cot Name, Value) de tao lai file .txt
 )
@@ -71,7 +73,7 @@ function Write-LgpoFile {
     $nl = "`r`n"
     $sb = New-Object Text.StringBuilder
     [void]$sb.Append("; OneDrive - Configure team site libraries to sync automatically ($($Rows.Count) thu vien) - muc tieu LGPO: $Scope" + $nl)
-    [void]$sb.Append("; Ap bang:  LGPO.exe /t `"<duong dan>\OneDrive-TenantAutoMount-lgpo.txt`"" + $nl)
+    [void]$sb.Append("; Ap bang:  LGPO.exe /t `"<duong dan>\$(Split-Path $txtFile -Leaf)`"" + $nl)
     [void]$sb.Append("; Nguon: may $env:COMPUTERNAME, user $env:USERNAME, ngay $(Get-Date -Format 'yyyy-MM-dd HH:mm') (T7_Export_OneDrive_Libraries.ps1)" + $nl + $nl)
     if (-not $NoClear) {
         [void]$sb.Append("$Scope$nl$policyKey$nl*${nl}DELETEALLVALUES$nl$nl")
@@ -155,7 +157,10 @@ try {
             $siteT = $m.Groups[2].Value; $libT = $m.Groups[3].Value; $url = $m.Groups[4].Value; $tenant = $m.Groups[5].Value.ToLower()
             $mount = $m.Groups[9].Value
             if ($url -match '-my\.sharepoint\.com' -or $libT -eq 'ODB') { $skipPersonal++; continue }
-            if (-not $mount) { $skipFolder++; $notes.Add("[$($a.PSChildName)] chi sync thu muc con cua thu vien: $siteT - $libT ($url)"); continue }
+            if (-not $mount) {
+                if (-not $IncludeFolderLibs) { $skipFolder++; $notes.Add("[$($a.PSChildName)] chi sync thu muc con cua thu vien: $siteT - $libT ($url)"); continue }
+                $mount = "(chi sync thu muc con - AutoMount se mount ca thu vien)"
+            }
             $value = "tenantId=$tenant&siteId=$(Format-Guid $m.Groups[6].Value)&webId=$(Format-Guid $m.Groups[7].Value)&listId=$(Format-Guid $m.Groups[8].Value)&webUrl=$([uri]::EscapeDataString($url))&version=1"
             $out += [pscustomobject]@{ Name = (ConvertTo-Ascii "$siteT - $libT"); Value = $value; Source = $mount; Status = "OK" }
             $n++
