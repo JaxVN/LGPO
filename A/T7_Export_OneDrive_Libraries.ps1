@@ -70,6 +70,28 @@ function Write-LgpoFile {
     [IO.File]::WriteAllText($txtFile, $sb.ToString(), [Text.Encoding]::ASCII)
 }
 
+function Read-IniLines {
+    # Doc file ini ke ca khi OneDrive dang mo (FileShare.ReadWrite); tu nhan UTF-16/UTF-8 theo BOM
+    param([string]$Path)
+    $fs = $null
+    try {
+        $fs = New-Object IO.FileStream($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
+        $sr = New-Object IO.StreamReader($fs, [Text.Encoding]::Default, $true)
+        $txt = $sr.ReadToEnd()
+        return @($txt -split "`r?`n")
+    } catch { return @() } finally { if ($fs) { $fs.Dispose() } }
+}
+
+function Get-SafeProps {
+    # Thuoc tinh cua key registry (bo PS*), bo qua gia tri nhay cam (token/cookie/secret/password)
+    param($Path)
+    $p = Get-ItemProperty -LiteralPath $Path -ErrorAction SilentlyContinue
+    if (-not $p) { return @() }
+    $p.PSObject.Properties | Where-Object { $_.Name -notlike 'PS*' } | ForEach-Object {
+        if ($_.Name -match 'token|cookie|secret|passw|ticket') { "$($_.Name)=<hidden>" } else { "$($_.Name)=$($_.Value)" }
+    }
+}
+
 try {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 
@@ -102,13 +124,24 @@ try {
         if ($p.ConfiguredTenantId) { $tenant = ([string]$p.ConfiguredTenantId).Trim('{','}').ToLower() }
         Write-Output ("Tai khoan {0}: tenantId={1} email={2}" -f $a.PSChildName, $tenant, $p.UserEmail)
         $raw.Add("### Account $($a.PSChildName) tenant=$tenant email=$($p.UserEmail)")
+        foreach ($sub in @("Tenants","ScopeIdToMountPointPathCache")) {
+            $sp = Join-Path $a.PSPath $sub
+            if (Test-Path $sp) {
+                $raw.Add("### $($a.PSChildName)\$sub")
+                foreach ($k in @($sp) + @(Get-ChildItem $sp -ErrorAction SilentlyContinue | ForEach-Object { $_.PSPath })) { foreach ($x in (Get-SafeProps $k)) { $raw.Add("  $x") } }
+            }
+        }
         $iniDir = Join-Path $env:LOCALAPPDATA "Microsoft\OneDrive\settings\$($a.PSChildName)"
-        if (-not (Test-Path $iniDir)) { Write-Output "  (khong co thu muc ini: $iniDir)"; continue }
-        foreach ($f in Get-ChildItem $iniDir -Filter *.ini -ErrorAction SilentlyContinue) {
-            foreach ($l in (Get-Content -LiteralPath $f.FullName -ErrorAction SilentlyContinue)) {
-                if ($l -match '^\s*libraryScope\s*=') {
+        if (-not (Test-Path $iniDir)) { Write-Output "  (khong co thu muc ini: $iniDir)"; $raw.Add("### (khong co thu muc ini $iniDir)"); continue }
+        foreach ($f in Get-ChildItem $iniDir -File -ErrorAction SilentlyContinue) {
+            $lines = @(Read-IniLines $f.FullName)
+            $raw.Add("### file $($f.Name) size=$($f.Length) lines=$($lines.Count)")
+            foreach ($l in $lines) {
+                if ($l -match '(?i)^\s*libraryScope\s*=') {
                     $scopeLines += [pscustomobject]@{ Acct = $a.PSChildName; Tenant = $tenant; Line = $l }
                     $raw.Add("[$($f.Name)] $l")
+                } elseif ($f.Extension -eq '.ini' -and $l -match '(?i)scope|siteid|listid|webid|library') {
+                    $raw.Add("[$($f.Name)] (other) $l")
                 }
             }
         }
@@ -121,7 +154,8 @@ try {
     $provs = @()
     foreach ($k in Get-ChildItem $provRoot) {
         $p = Get-ItemProperty $k.PSPath
-        $raw.Add("### Provider $($k.PSChildName) LibraryType=$($p.LibraryType) MountPoint=$($p.MountPoint) UrlNamespace=$($p.UrlNamespace)")
+        $raw.Add("### Provider $($k.PSChildName)")
+        foreach ($x in (Get-SafeProps $k.PSPath)) { $raw.Add("  $x") }
         if ($p.UrlNamespace -and $p.UrlNamespace -match '^https://[^/]+/(sites|teams)/' -and $p.UrlNamespace -notmatch '-my\.sharepoint\.com') {
             $provs += [pscustomobject]@{ Key = $k.PSChildName; Mount = [string]$p.MountPoint; Url = [string]$p.UrlNamespace }
         }
@@ -132,7 +166,8 @@ try {
     # ---- 3. Ghep Provider <-> dong libraryScope, dung chuoi library ID ----
     $out = @()
     foreach ($pv in $provs) {
-        $name = ConvertTo-Ascii (Split-Path $pv.Mount -Leaf)
+        $name = ""
+        if ($pv.Mount) { $name = ConvertTo-Ascii (Split-Path $pv.Mount -Leaf) }
         if (-not $name) { $name = ConvertTo-Ascii ($pv.Url -replace '^https://[^/]+/(sites|teams)/', '' -replace '/.*$', '') }
         $site = ([regex]::Match($pv.Url, '^https://[^/]+/(?:sites|teams)/[^/]+')).Value
         $webUrl = [uri]::EscapeDataString($site)
@@ -175,7 +210,7 @@ try {
     $out | ForEach-Object { Write-Output ("  [{0}] {1}  <-  {2}" -f $_.Status, $_.Name, $_.Source) }
     Write-Output ""
 
-    if ($ok.Count -eq 0) { throw "Khong lay duoc ID thu vien nao. Gui $rawFile de chinh lai cach doc ini." }
+    if ($ok.Count -eq 0) { Write-Output "KHONG lay duoc ID thu vien nao. Gui file nay de chinh lai cach doc: $rawFile"; exit 2 }
     Write-LgpoFile $ok
     Write-Output "OK: $($ok.Count)/$($out.Count) thu vien -> $txtFile"
     Write-Output "CSV: $csvFile | Raw: $rawFile"
@@ -185,5 +220,6 @@ try {
 }
 catch {
     Show-Err $_
+    if ($raw -and $raw.Count -gt 0) { try { [IO.File]::WriteAllLines($rawFile, $raw.ToArray()); Write-Output "Raw (de debug): $rawFile" } catch {} }
     exit 1
 }
