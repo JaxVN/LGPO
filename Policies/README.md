@@ -4,7 +4,7 @@
 |---|---|
 | `NonAdmin-Registry.pol` | Registry.pol của nhóm Non-Administrators (bản cũ) |
 | `Machine-registry.pol` | Registry.pol mức máy (đang trống) |
-| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 39 rule Unrestricted + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
+| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 40 rule Unrestricted (gồm MicroSIP) + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
 | `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện, tên giá trị dạng `Ke_toan - Documents`) |
 
@@ -66,15 +66,15 @@ Dòng `AttemptedPath` là chương trình bị chặn; thêm một rule `Unrestr
 
 ## Tải và áp trực tiếp từ repo (CMD Administrator)
 
-`LGPO.exe /t` chỉ đọc file trên ổ đĩa, nên tải file về `C:\Soft\SCT` rồi áp. (Link trỏ nhánh làm việc; sau khi merge đổi `claude/intelligent-brahmagupta-qxpagv` thành `main`.)
+`LGPO.exe /t` chỉ đọc file trên ổ đĩa, nên tải file về `C:\Soft\SCT` rồi áp.
 
 ```bat
 :: SRP cho Non-Administrators
-curl -L -o "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/claude/intelligent-brahmagupta-qxpagv/Policies/SRP-NonAdmin-lgpo.txt"
+curl -L -o "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/main/Policies/SRP-NonAdmin-lgpo.txt"
 C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt"
 
 :: OneDrive (AllowTenantList + TenantAutoMount)
-curl -L -o "C:\Soft\SCT\OneDrive-Machine-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/claude/intelligent-brahmagupta-qxpagv/Policies/OneDrive-Machine-lgpo.txt"
+curl -L -o "C:\Soft\SCT\OneDrive-Machine-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/main/Policies/OneDrive-Machine-lgpo.txt"
 C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\OneDrive-Machine-lgpo.txt"
 
 gpupdate /force

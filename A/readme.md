@@ -150,3 +150,9 @@ Xem dạng cây (giống gpedit, có mở/đóng, tìm kiếm, lọc mục khác
 - [ ] Cột baseline Microsoft (Security Baseline xlsx) trong `Template-Compare.csv`.
 - [ ] Cập nhật Edge baseline (hiện v139) và các baseline mới của Security Compliance Toolkit.
 - [ ] Dựng SRP cho workgroup từ danh sách rule domain (lọc các path rộng, rule gắn tên người, file tạm).
+- [ ] **Edge/Chrome**: template Win11/Win10 chưa có policy trình duyệt; mới có ở cột Domain (12 giá trị: trang chủ/tab mới/khởi động SharePoint, `LocalNetworkAccessAllowedForUrls`). Tạo `Policies/Browser-Edge-Chrome-Machine-lgpo.txt` (mức máy, `/t`), đối chiếu với công cụ browser-policy của PCS (chưa đọc được: môi trường chặn mạng, connector PCS không có tool; cần nội dung trang/.reg hoặc tên repo). ADMX chỉ cần trên máy mẫu nếu muốn chỉnh bằng gpedit, client không cần.
+- [ ] SRP: thêm rule cho phần mềm cài per-user khi phát sinh (MicroSIP đã thêm; Unikey nằm trong `C:\Soft` đã được `C:\Soft\*` cho phép). Lấy đường dẫn từ sự kiện 865/866. Áp lại SRP lên 655 → T1 → T2 để template Win11 có rule mới.
+- [ ] Chạy `L3b_Run_T3_Win11.ps1` qua Action1 một lần (mới chạy tay tương đương); thử T3/T4 trên máy Win11 thật khác 655.
+- [ ] T3/T4: thêm log "Dùng template: Templates/<OS>", biến `LGPO_FORCE`, chọn bản PreDeploy cụ thể cho T4; lọc `[System Access]` và kiểm tra `adm_local` trong T1b/T3.
+- [ ] Quy ước: `Templates/Win11` là bản gốc duy nhất (cập nhật từ máy mẫu 655); máy Win10 dùng L3b. Chỉ backup từ 127 nếu cần cấu hình riêng cho Win10.
+- [ ] Kiểm tra trên 127 sau khi áp Win11 (đã xong 9/10): 14 thư viện OneDrive mount OK, Store/lock screen không bị ảnh hưởng; T4 rollback OK.
