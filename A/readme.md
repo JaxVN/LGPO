@@ -31,12 +31,31 @@ Các máy khác dùng Action1 **tải ZIP mẫu đó về và deploy** bằng LG
 | `L1_Run_T1.ps1` | Action1 (laptop mẫu) | Launcher chạy cả `T1_Backup_Template.ps1` (3 bước trong 1 lần). Lỗi thì chạy riêng L1a/L1b/L1c |
 | `L1a_Run_T1a.ps1`, `L1b_Run_T1b.ps1`, `L1c_Run_T1c.ps1` | Action1 (laptop mẫu) | **Launcher mỏng**: mỗi file tải `T1a`/`T1b`/`T1c` từ GitHub (`raw.githubusercontent.com`, có `?t=` tránh cache) rồi chạy, exit code chuyển thẳng cho Action1. Dán 3 file này vào Action1 thay vì dán nguyên T1x; sửa script trên repo là Action1 tự dùng bản mới. **Mặc định `$Branch = "main"`** |
 | `L3_Run_T3.ps1`, `L4_Run_T4.ps1` | Action1 (máy đích) | Launcher cho `T3` (deploy mẫu) và `T4` (rollback), cùng khuôn L1a/b/c. **Test 1–2 máy trước** khi áp cho cả đội |
+| `L3b_Run_T3_Win11.ps1` | Action1 (máy đích) | Như `L3` nhưng **ép áp template Win11 (`Templates/Win11`) lên máy bất kỳ**, ví dụ Win10 (đổi `$OsFolder = "Win10"` để ép ngược lại). Launcher tự thay dòng `$OsFolder` trong nội dung T3 tải về nên chạy được cả khi T3 trên repo chưa đọc biến `LGPO_OSFOLDER`; không thấy dòng đó thì dừng, không áp nhầm. Lưu ý: cmd/PowerShell chạy tay – `exit` của T3 đóng luôn cửa sổ PowerShell |
 | `T6_Collect_Domain_Effective.ps1` (+ launcher `L6_Run_T6.ps1`) | **Máy domain**, Action1 | Thu chính sách **đang có hiệu lực** (gồm GPO từ domain) để đối chiếu khi làm GPO cho nhóm WorkGroup: `gpresult` Computer/User (.xml + .html), `reg export` của `HKLM\SOFTWARE\Policies`, `HKLM\…\CurrentVersion\Policies` và (nếu có user đăng nhập) `HKCU` tương ứng → `C:\Soft\GPO-Zip\Domain-Effective.zip`. Bù phần Administrative Templates của GPO domain mà `LGPO /b` (T1) không lấy. **Không dùng để deploy**. Đưa lên repo: trên máy đó chạy `$env:LGPO_ZIP="Domain-Effective.zip"; $env:LGPO_FOLDER="Domain"; .\T2_Upload_Template.ps1` → `Templates/Domain/` |
 | `T2_Upload_Template.ps1` | Laptop mẫu 655, **chạy tay** | Đẩy ZIP + SHA256 lên `Templates/Win10/` hoặc `Templates/Win11/` (tự nhận theo build Windows của máy mẫu: build ≥ 22000 = Win11) qua GitHub API. Cần PAT (Contents: Read & write) – nhập khi được hỏi hoặc đặt `$env:GITHUB_TOKEN`. Không chạy qua Action1 |
-| `T3_Deploy_Template.ps1` | Máy đích, Action1 | Cài LGPO nếu thiếu → tải ZIP đúng bản OS (`Templates/Win10` hoặc `Win11`, tự nhận theo build; đặt `$OsFolder` để ép) + **kiểm SHA256** → backup hiện trạng `PreDeploy-*` → xoá `Registry.pol` cũ → `LGPO /g` + `/un` + `/ua` → `gpupdate`. ZIP không đổi so với lần trước thì bỏ qua |
+| `T3_Deploy_Template.ps1` | Máy đích, Action1 | Cài LGPO nếu thiếu → tải ZIP đúng bản OS (`Templates/Win10` hoặc `Win11`, tự nhận theo build; đặt biến môi trường `LGPO_OSFOLDER` (vd `Win11`) để ép) + **kiểm SHA256** → backup hiện trạng `PreDeploy-*` → xoá `Registry.pol` cũ → `LGPO /g` + `/un` + `/ua` → `gpupdate`. ZIP không đổi so với lần trước thì bỏ qua |
 | `T4_Rollback_PreDeploy.ps1` | Máy đích, Action1 | Khôi phục về bản `PreDeploy-*` mới nhất (trước lần T3 gần nhất) |
 
 Cả 4 script **độc lập** (dán thẳng vào Action1 hoặc chạy qua launcher), log tiếng Anh/không dấu để Action1 hiển thị ổn định.
+
+### Deploy bằng `LGPO /t` (file LGPO text, không cần zip)
+
+Dùng cho các lớp cấu hình nhỏ, từng bước (OneDrive, SRP…) trong thư mục `Policies/`. Khác `T3` (áp cả gói, xoá `Registry.pol` cũ trước), `/t` chỉ **thêm/ghi đè đúng các mục trong file**, không đụng phần còn lại.
+
+```powershell
+# Máy đích, PowerShell Administrator (hoặc script Action1). /t chỉ nhận đường dẫn cục bộ -> tải về trước
+$d = 'C:\Soft\SCT'; New-Item -ItemType Directory $d -Force | Out-Null
+$u = 'https://raw.githubusercontent.com/JaxVN/LGPO/main/Policies/OneDrive-Machine-lgpo.txt'
+curl.exe -sSL $u -o "$d\OneDrive-Machine-lgpo.txt"
+& C:\Soft\SCT\LGPO_30\LGPO.exe /t "$d\OneDrive-Machine-lgpo.txt"
+gpupdate /force
+```
+
+- Thay file để áp lớp khác: `SRP-NonAdmin-lgpo.txt` (SRP cho Non-Administrators, có sẵn mục `CLEAR`), `SRP-NonAdmin-remove-lgpo.txt` (gỡ SRP).
+- Kiểm tra: `LGPO.exe /parse /m C:\Windows\System32\GroupPolicy\Machine\Registry.pol`; tên giá trị trong `TenantAutoMount` là tên thư viện (vd `Ke_toan - Documents`), đếm bằng `(Get-Item HKLM:\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount).GetValueNames().Count` (kết quả 14).
+- Rollback: backup trước bằng `T1` hoặc copy `Registry.pol`; với SRP dùng file `*-remove-lgpo.txt`.
+- Policy mức máy áp ngay sau `gpupdate`; OneDrive mount thư viện khi tiến trình OneDrive của user đọc lại policy (đăng xuất/đăng nhập hoặc khởi động lại OneDrive), không cần reboot.
 
 ### Script cũ (vẫn giữ)
 
@@ -88,7 +107,7 @@ Trên máy đích: `T3` áp lại qua `LGPO /un`; **cần reboot (hoặc user đ
 
 `Templates/Template-Compare.csv` liệt kê toàn bộ file và từng setting trong ZIP mẫu (Win11, Win10 và Domain) (registry của Non-Administrators, SRP path rule, Security Settings, Advanced Audit, manifest). Các cột: `Item type | Path in zip | Section / Registry key | Name | Type | Win 11 | Win10 | Domain | Note 1 | Note 2`. Cột `Win 11` / `Win10` / `Domain` là giá trị trong ZIP tương ứng (`Templates/Win11`, `Win10`, `Domain`) (trống = không có), `Note 1/2` để bạn ghi chú. Mở bằng Excel (UTF-8 có BOM).
 
-Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Settings) và `Templates/Domain/Domain-Effective.zip` (T6: GPO đã ap, registry policy domain; item type `Domain GPO applied` / `Domain registry policy`). Cập nhật sau khi upload ZIP mới (Win10, Win11 hoặc Domain): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
+Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Settings) và `Templates/Domain/Domain-Effective.zip` (T6: GPO đã ap, registry policy domain; item type `Domain GPO applied` / `Registry policy`; token/tài khoản đăng nhập trong `.reg` được thay bằng `(redacted)`). Mọi registry policy (từ `.pol` của template và `.reg` của máy domain) dùng chung item type `Registry policy`, Section có tiền tố hive `HKLM\` / `HKCU\`; rule SRP gom chung item type `SRP path rule` để so sánh giữa các nguồn. Cập nhật sau khi upload ZIP mới (Win10, Win11 hoặc Domain): `python3 Templates/build_compare_csv.py` — **giữ nguyên Note đã nhập**.
 
 ## Đường dẫn trên máy
 
@@ -110,3 +129,23 @@ Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Set
 - Bản này **chưa test trên Windows** (môi trường dựng script là Linux). Hãy thử trên 1 VM/máy test trước: kiểm `LGPO /b` tạo `{GUID}`, `/g` áp lại đúng, rollback hoạt động.
 - `Policies/NonAdmin-Registry.pol` hiện trong repo mới có `NoDrives` + vài key certificate, **chưa có SRP**; ZIP mới từ T1 sẽ chứa cả hai sau khi cấu hình xong.
 - Còn lại chưa làm: upload backup định kỳ lên SharePoint và restore từ SharePoint (`Grok/S02`, `Grok/S03`).
+
+## Cấu hình bằng file `.reg`
+
+Thư mục [`Regedit/`](../Regedit/README.md) chứa các file `.reg` nhập trực tiếp vào registry (không qua PowerShell/Local GPO): OneDrive `AllowTenantList` (6 tenant) và `TenantAutoMount` (14 thư viện), kèm file gỡ.
+
+## Policy OneDrive bằng LGPO text
+
+[`Policies/OneDrive-Machine-lgpo.txt`](../Policies/README.md): `AllowTenantList` (6 tenant) + `TenantAutoMount` (14 thư viện) + `EnableSyncAdminReports`. Áp bằng `LGPO.exe /t` lên máy mẫu để vào Local GPO (T1 backup được), thay cho file `.reg` ghi thẳng registry.
+
+## Treeview
+
+Xem dạng cây (giống gpedit, có mở/đóng, tìm kiếm, lọc mục khác biệt): mở `docs/Template-Treeview.html` bằng trình duyệt; tạo lại bằng `python3 Templates/build_treeview.py` sau khi cập nhật CSV.
+
+## Việc cần làm sau (backlog)
+
+- [ ] **Chuyển repo sang private** (hiện đang public để develop). Trước khi chuyển: `T3`/launcher cần `$Token` (PAT fine-grained, Contents: Read-only) hoặc tách `Templates/` sang repo private riêng. Lưu ý các file nhạy cảm đã nằm trong lịch sử git (`Templates/Domain/*` có tên máy/GPO/OU/IP nội bộ, `gpresult-*.html`, `HKLM-Policies.reg`).
+- [ ] Báo cáo GPO dạng web: xuất `Get-GPOReport` (XML/HTML) từ DC → script chuyển sang Markdown có mục thu gọn, gom thành `docs/`.
+- [ ] Cột baseline Microsoft (Security Baseline xlsx) trong `Template-Compare.csv`.
+- [ ] Cập nhật Edge baseline (hiện v139) và các baseline mới của Security Compliance Toolkit.
+- [ ] Dựng SRP cho workgroup từ danh sách rule domain (lọc các path rộng, rule gắn tên người, file tạm).

@@ -1,0 +1,22 @@
+Windows Registry Editor Version 5.00
+
+; OneDrive: Configure team site libraries to sync automatically (14 thu vien H-*) - muc may (HKLM)
+; Xoa key cu truoc (dong [-...]) de bo cac gia tri khong con trong danh sach, roi tao lai.
+
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount]
+"Ban_Tong_Giam_Doc - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={2485d934-dea4-4dc8-9852-9564fbc4fa2d}&webId={187137b6-817d-44b4-acb9-4749a641a762}&listId={91902dc0-3cf5-4a17-a5c6-37b6f8e83e8d}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-BTGD&version=1"
+"Ke_toan - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={0857086d-64cc-4937-863e-efaeb345cd25}&webId={460e9aac-b9b3-467a-a78e-579cf0226fa6}&listId={39236ff6-fa70-4237-a24a-33ce39bb2962}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-KT&version=1"
+"Dau_tu - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={66e237a7-4b7c-426e-a60c-eec790b8a3f5}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-DT&version=1"
+"Quan_ly_chi_phi - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={ec8bb46c-d5e6-4e29-ac30-b4af6359b7e2}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-QLCP&version=1"
+"Dich_vu_khach_hang - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={aec6b44b-f682-4723-a84c-6b59276595e4}&webId={187137b6-817d-44b4-acb9-4749a641a762}&listId={91902dc0-3cf5-4a17-a5c6-37b6f8e83e8d}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-DVKH&version=1"
+"Kinh_doanh_marketing - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={3caa8dfd-ddba-4164-a924-eab7e8f66ed2}&webId={61985944-ce3a-4992-bd77-04372162b5eb}&listId={0eb8ba1f-ab9a-49d5-ac3d-7fa90c69f0ac}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-KD&version=1"
+"Quan_ly_thiet_ke - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={8e64ee94-4ed1-4d22-b573-3c071d5c9a61}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-QLTK&version=1"
+"DVQLBDS - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={96c278b6-1da9-4bd8-8966-53ba1f0df01f}&webId={5600246d-c652-466c-843b-a0108376cffe}&listId={da5d659c-641e-4069-8432-6ff6a8da76d3}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-DVQLBDS&version=1"
+"Quan_ly_xay_dung - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={3be8d032-1e6b-41a8-ade3-7b4a56cbf193}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-QLDA&version=1"
+"Dau_thau_thu_mua - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={13d0ce36-429a-41c8-96b3-c24219d4b6de}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-DAUTHAU&version=1"
+"VPHD - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={f44ba1b9-7636-4d99-bbce-ba5665f5906a}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-VPHD&version=1"
+"Phap_ly - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={675428ef-010e-4e16-8f31-ee1e10ba6a58}&webId={8da00302-771a-4e92-bfca-e4ba20bd10b9}&listId={2eda53a8-ceed-49f9-b01a-f18f08f5d96f}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-PLY&version=1"
+"To_chuc_hanh_chinh - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={4723f5ba-7f11-48aa-b8e9-a8ae05ec5725}&webId={4bbb1fdb-6e6a-40d3-83a5-389361133233}&listId={ca0e6551-6659-4446-9b33-dc25fcd3582e}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-TCHC&version=1"
+"Tai_chinh - Documents"="tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={a661dd9c-be53-466c-a391-79515ed6f3a7}&webId={945ea9db-2e48-4637-92d0-2d588785ff5d}&listId={679ed02e-1274-4166-87c6-5db97018d1a2}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fsites%2FH-TC&version=1"
