@@ -800,7 +800,7 @@ QWORD:134359254487967440
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
 ItemData
-BINARY:3f57c7f31da4a8faca414fe01b12e10e
+BINARY:3f,57,c7,f3,1d,a4,a8,fa,ca,41,4f,e0,1b,12,e1,0e
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
@@ -830,7 +830,7 @@ QWORD:134362603523244113
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}\SHA256
 ItemData
-BINARY:716d55c3f52e5eda3b4afec0d7fa8fd41383e22513a9ff752cc10084957571e8
+BINARY:71,6d,55,c3,f5,2e,5e,da,3b,4a,fe,c0,d7,fa,8f,d4,13,83,e2,25,13,a9,ff,75,2c,c1,00,84,95,75,71,e8
 
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}\SHA256
