@@ -796,6 +796,47 @@ Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{053e2c57
 LastModified
 QWORD:134359254487967440
 
+; --- Hash rule vfp7.exe (VFP 7.0.0.9262, 4354048 bytes) - lay tu may STCD00063 (T6, 2026-10-12). Cho phep vfp7.exe bat ke duong dan
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
+ItemData
+BINARY:3f57c7f31da4a8faca414fe01b12e10e
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
+HashAlg
+DWORD:32771
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
+ItemSize
+QWORD:4354048
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
+Description
+SZ:VFP7 7.0.0.9262 (hash)
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}
+LastModified
+QWORD:134362603523244113
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}\SHA256
+ItemData
+BINARY:716d55c3f52e5eda3b4afec0d7fa8fd41383e22513a9ff752cc10084957571e8
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes\{133d0536-7da9-401b-94f2-8d2e20136031}\SHA256
+HashAlg
+DWORD:32780
+
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{552e6499-3dbd-58e7-9063-c426f8eb67d8}
 ItemData
