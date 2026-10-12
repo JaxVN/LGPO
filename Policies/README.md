@@ -85,6 +85,7 @@ gpupdate /force
 
 Ngoài path rule, `SRP-NonAdmin-lgpo.txt` có **hash rule** cho `vfp7.exe` (Visual FoxPro 7.0.0.9262, 4.354.048 byte, GUID `{133d0536-7da9-401b-94f2-8d2e20136031}`, dòng ~799–838). Hash rule cho phép chạy đúng file này dù nằm ở đường dẫn nào (ví dụ ổ `F:` map khác nhau), nên không phải tạo tay trên từng máy khách.
 
+- Cú pháp LGPO cho giá trị nhị phân: `BINARY:3f,57,c7,...` (từng byte hai chữ số hex, **ngăn cách bằng dấu phẩy**). Viết liền (`BINARY:3f57c7...`) LGPO chỉ ghi 1 byte `FF` và rule không có tác dụng.
 - Hash gắn với **nội dung file**: FoxPro/FAST cập nhật `.exe` hoặc máy khác dùng bản khác thì hash đổi, cần thêm rule mới.
 - Cách lấy hash cho file khác: tạo hash rule tay một lần trên máy mẫu (gpedit → SRP → Additional Rules → New Hash Rule), chạy T6 (`L6_Run_T6.ps1`) rồi lấy mục `...\262144\Hashes\{GUID}` trong `HKCU-Policies.reg` (gồm `ItemData` MD5, `ItemSize`, và subkey `SHA256`). Không dùng `Get-FileHash` vì SRP tính hash kiểu Authenticode với file có chữ ký.
 - Kiểm tra sau khi áp: `LGPO.exe /parse /u "C:\Windows\System32\GroupPolicyUsers\S-1-5-32-545\User\Registry.pol" | findstr /i 133d0536`, rồi **đăng xuất/đăng nhập lại** và xem Event 865 còn báo `vfp7.exe` không.
