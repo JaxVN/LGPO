@@ -4,7 +4,7 @@
 |---|---|
 | `NonAdmin-Registry.pol` | Registry.pol của nhóm Non-Administrators (bản cũ) |
 | `Machine-registry.pol` | Registry.pol mức máy (đang trống) |
-| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 40 rule Unrestricted (gồm MicroSIP) + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
+| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 40 rule Unrestricted (gồm MicroSIP) + 1 hash rule `vfp7.exe` + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
 | `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện, tên giá trị dạng `Ke_toan - Documents`) |
 
@@ -72,6 +72,7 @@ Dòng `AttemptedPath` là chương trình bị chặn; thêm một rule `Unrestr
 :: SRP cho Non-Administrators
 curl -L -o "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/main/Policies/SRP-NonAdmin-lgpo.txt"
 C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\SRP-NonAdmin-lgpo.txt"
+gpupdate /force
 
 :: OneDrive (AllowTenantList + TenantAutoMount)
 curl -L -o "C:\Soft\SCT\OneDrive-Machine-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/main/Policies/OneDrive-Machine-lgpo.txt"
@@ -79,6 +80,14 @@ C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\OneDrive-Machine-lgpo.txt"
 
 gpupdate /force
 ```
+
+## Hash rule (vfp7.exe)
+
+Ngoài path rule, `SRP-NonAdmin-lgpo.txt` có **hash rule** cho `vfp7.exe` (Visual FoxPro 7.0.0.9262, 4.354.048 byte, GUID `{133d0536-7da9-401b-94f2-8d2e20136031}`, dòng ~799–838). Hash rule cho phép chạy đúng file này dù nằm ở đường dẫn nào (ví dụ ổ `F:` map khác nhau), nên không phải tạo tay trên từng máy khách.
+
+- Hash gắn với **nội dung file**: FoxPro/FAST cập nhật `.exe` hoặc máy khác dùng bản khác thì hash đổi, cần thêm rule mới.
+- Cách lấy hash cho file khác: tạo hash rule tay một lần trên máy mẫu (gpedit → SRP → Additional Rules → New Hash Rule), chạy T6 (`L6_Run_T6.ps1`) rồi lấy mục `...\262144\Hashes\{GUID}` trong `HKCU-Policies.reg` (gồm `ItemData` MD5, `ItemSize`, và subkey `SHA256`). Không dùng `Get-FileHash` vì SRP tính hash kiểu Authenticode với file có chữ ký.
+- Kiểm tra sau khi áp: `LGPO.exe /parse /u "C:\Windows\System32\GroupPolicyUsers\S-1-5-32-545\User\Registry.pol" | findstr /i 133d0536`, rồi **đăng xuất/đăng nhập lại** và xem Event 865 còn báo `vfp7.exe` không.
 
 ## Rule Store: vì sao hẹp
 
