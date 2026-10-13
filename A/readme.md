@@ -156,6 +156,7 @@ Mỗi công ty một Entra ID tenant → mỗi launcher Action1 một tenant; lo
 - Policy mức máy; người dùng đăng xuất/đăng nhập lại (hoặc khởi động lại OneDrive) để OneDrive đọc policy.
 - Xung đột: nếu máy còn **Folder Redirection** từ GPO domain cũ thì KFM không chuyển được; bỏ redirect trước.
 - Kiểm tra: `reg query "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v KFMSilentOptIn`.
+- Chạy tay trên máy mẫu (không qua Action1): xem thư mục [`Command/`](../Command/README.md) (`KFM-<TEN>.bat`).
 - Launcher tải `T8` và file mẫu từ nhánh `main` của repo, nên chỉ chạy được sau khi merge vào `main` (hoặc đổi `$Branch`).
 
 ## Policy OneDrive bằng LGPO text
