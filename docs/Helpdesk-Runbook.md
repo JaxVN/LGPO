@@ -1,30 +1,32 @@
 # Runbook Helpdesk: deploy GPO mẫu cho 6 tenant
 
-Dành cho Helpdesk. Tài liệu này nói rõ **việc nào Action1 làm tự động** và **việc nào phải làm tay cho từng tenant phụ**.
+Dành cho Helpdesk. Tài liệu này nói rõ **cấu hình chung** (template, Action1 làm tự động) và **cấu hình đặc thù của từng công ty thành viên (tenant phụ)**, là phần phải làm riêng và làm tay.
 Sơ đồ tổng quan: [`Script-Map.md`](Script-Map.md). Danh sách script: [`Script-Map.csv`](Script-Map.csv).
 
 | Tenant | Vai trò | Tenant ID | Launcher KFM (Action1) |
 |---|---|---|---|
-| **KIA** | Tenant chính (template mẫu được dựng từ tenant này) | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` | `A/L8_KFM_KIA.ps1` |
-| SNP | Tenant phụ | `4be02620-368a-4c1c-81da-d298040b2d92` | `A/L8_KFM_SNP.ps1` |
-| KSL | Tenant phụ | `692eb525-c279-4d74-a010-638ac401a7d9` | `A/L8_KFM_KSL.ps1` |
-| LAV | Tenant phụ | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` | `A/L8_KFM_LAV.ps1` |
-| CIT | Tenant phụ | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` | `A/L8_KFM_CIT.ps1` |
-| DTC | Tenant phụ | `02cc35ba-57a1-438b-8ae4-f68de204fe24` | `A/L8_KFM_DTC.ps1` |
+| **KIA** | Công ty chính (template mẫu được dựng từ tenant này) | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` | `A/L8_KFM_KIA.ps1` |
+| SNP | Công ty thành viên (tenant phụ) | `4be02620-368a-4c1c-81da-d298040b2d92` | `A/L8_KFM_SNP.ps1` |
+| KSL | Công ty thành viên (tenant phụ) | `692eb525-c279-4d74-a010-638ac401a7d9` | `A/L8_KFM_KSL.ps1` |
+| LAV | Công ty thành viên (tenant phụ) | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` | `A/L8_KFM_LAV.ps1` |
+| CIT | Công ty thành viên (tenant phụ) | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` | `A/L8_KFM_CIT.ps1` |
+| DTC | Công ty thành viên (tenant phụ) | `02cc35ba-57a1-438b-8ae4-f68de204fe24` | `A/L8_KFM_DTC.ps1` |
 
-## 1. Template mẫu mang gì, và vì sao tenant phụ cần làm thêm
+## 1. Cấu hình chung và cấu hình đặc thù của công ty thành viên
 
 Template (`Templates/Win11/GPO-Template.zip`) được dựng trên máy của **tenant KIA**, nên có sẵn các giá trị của KIA:
 
-| Policy trong template | Dùng được cho mọi tenant? | Việc cần làm cho tenant phụ |
+| Policy trong template | Loại | Việc cần làm cho công ty thành viên (tenant phụ) |
 |---|---|---|
-| `AllowTenantList` (6 tenant) | **Có** | Không |
-| `EnableSyncAdminReports`, `SilentAccountConfig`, `FilesOnDemandEnabled`, `KFMBlockOptOut` | **Có** | Không |
-| **`KFMSilentOptIn`** (Tenant ID) | **Không**: đang là tenant KIA | **Chạy `L8_KFM_<TEN>`** để ghi đè bằng Tenant ID đúng |
-| **`TenantAutoMount`** (14 thư viện SharePoint) | **Không**: toàn thư viện của KIA | **Làm tay** theo mục 3: xuất thư viện của tenant đó rồi áp |
-| SRP Non-Admin (whitelist ứng dụng) | Có | Không |
+| `AllowTenantList` (6 tenant) | **Chung** | Không |
+| `EnableSyncAdminReports`, `SilentAccountConfig`, `FilesOnDemandEnabled`, `KFMBlockOptOut` | **Chung** | Không |
+| **`KFMSilentOptIn`** (Tenant ID) | **Đặc thù từng công ty**: đang là tenant KIA | **Chạy `L8_KFM_<TEN>`** để ghi đè bằng Tenant ID đúng |
+| **`TenantAutoMount`** (14 thư viện SharePoint) | **Đặc thù từng công ty**: toàn thư viện của KIA | **Làm tay** theo mục 3: xuất thư viện của tenant đó rồi áp |
+| SRP Non-Admin (whitelist ứng dụng) | **Chung** | Không |
 
-## 2. Việc chạy trên Action1 (mỗi lần có template mới)
+**Cấu hình đặc thù của công ty thành viên** gồm đúng hai mục: Tenant ID của KFM (`L8`, tự động qua Action1) và danh sách thư viện SharePoint tự mount (`TenantAutoMount`, làm tay). Mọi thứ còn lại dùng chung từ template.
+
+## 2. Cấu hình chung + KFM đặc thù: chạy trên Action1 (mỗi lần có template mới)
 
 Thứ tự cố định: **T3 → L8**. Mỗi lần T3 thực sự deploy (SHA256 template đổi), nó **xóa `Registry.pol` cũ** nên KFM đúng tenant và TenantAutoMount của tenant phụ **mất**, phải áp lại.
 
@@ -32,12 +34,12 @@ Thứ tự cố định: **T3 → L8**. Mỗi lần T3 thực sự deploy (SHA25
 |---|---|---|---|
 | 1 | Deploy template | Mọi máy | Action1 chạy `A/L3_Run_T3.ps1` (nhóm Test trước) |
 | 2 | **KFM đúng tenant** | Mọi máy | Action1 chạy `A/L8_KFM_<TEN>.ps1` cho **nhóm máy của công ty đó**. **KIA cũng chạy** để có log và kiểm tra |
-| 3 | **TenantAutoMount của tenant phụ** | Máy tenant phụ | **Làm tay**, xem mục 3 |
+| 3 | **TenantAutoMount: cấu hình đặc thù của công ty thành viên** | Máy công ty thành viên | **Làm tay**, xem mục 3 |
 | 4 | Người dùng đăng xuất/đăng nhập lại (hoặc khởi động lại OneDrive). Máy có SRP mới thì khởi động lại máy | Mọi máy | Báo người dùng |
 
 Nếu T3 báo `Template khong doi ... bo qua` thì **không cần** chạy lại bước 2 và 3.
 
-## 3. Việc làm tay cho từng tenant phụ: TenantAutoMount (SNP, KSL, LAV, CIT, DTC)
+## 3. Cấu hình đặc thù của từng công ty thành viên (tenant phụ): TenantAutoMount, làm tay (SNP, KSL, LAV, CIT, DTC)
 
 Hiện chưa có launcher Action1 cho phần này, vì danh sách thư viện của mỗi tenant phải lấy từ máy đã đăng nhập. Làm **một lần cho mỗi tenant**, sau đó áp lại sau mỗi lần T3 deploy.
 
@@ -91,7 +93,7 @@ Log: `C:\Soft\GPO-Template\deploy.log` (T3), `C:\Soft\OneDrive-KFM\kfm.log` (T8)
 | Máy không chuyển Desktop/Documents/Pictures | Chưa đăng nhập OneDrive đúng tenant, hoặc chưa đăng xuất/đăng nhập lại | Kiểm tra mục 4 |
 | Sự cố sau T3 | — | Action1 chạy `A/L4_Run_T4.ps1` để quay về bản `PreDeploy-*` |
 
-## 6. Checklist rollout cho một tenant phụ (ví dụ SNP)
+## 6. Checklist rollout cho một công ty thành viên (ví dụ SNP)
 - [ ] Máy mẫu đã upload template mới (T2), đã kiểm SHA256.
 - [ ] Nhóm Test (1-2 máy SNP, gồm máy Entra joined và máy Workgroup): `L3` rồi `L8_KFM_SNP`.
 - [ ] `reg query ... /v KFMSilentOptIn` ra Tenant ID của SNP.
