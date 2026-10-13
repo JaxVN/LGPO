@@ -1,6 +1,7 @@
 # Script Map: vòng đời phát triển và deploy LGPO template (kiểu CI/CD)
 
 Bảng chi tiết từng script (cột `Repo | Action 1 | Usage | Note`): [`Script-Map.csv`](Script-Map.csv).
+Hướng dẫn thao tác cho Helpdesk (việc tự động và việc làm tay cho tenant phụ): [`Helpdesk-Runbook.md`](Helpdesk-Runbook.md).
 
 Bốn cột (lane) của quy trình:
 

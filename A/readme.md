@@ -71,6 +71,8 @@ gpupdate /force
 
 Nếu T1 báo lỗi, log in `FAILED at step [1/3 | 2/3 | 3/3]` kèm dòng gây lỗi. Chạy lại riêng `T1a` → `T1b` → `T1c` để xem step nào hỏng. Trạng thái lưu ở `C:\Soft\GPO-Template-Build\` (thư mục `Backup\{GUID}`, `Extra\`, `manifest.json`); T1b/T1c đọc lại thư mục này nên không phải backup lại. Lưu ý: T1a **xóa** thư mục build cũ trước khi backup.
 
+Runbook cho Helpdesk (bước tự động và bước làm tay cho tenant phụ như L8, TenantAutoMount): [`docs/Helpdesk-Runbook.md`](../docs/Helpdesk-Runbook.md).
+
 Sơ đồ và bảng quan hệ giữa các script (repo / Action1 / cách dùng / ghi chú): [`docs/Script-Map.md`](../docs/Script-Map.md), [`docs/Script-Map.csv`](../docs/Script-Map.csv).
 
 ## Quy trình thực hiện
