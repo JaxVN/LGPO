@@ -155,6 +155,7 @@ Mỗi công ty một Entra ID tenant → mỗi launcher Action1 một tenant; lo
 
 (Khớp với `AllowTenantList` trong `Policies/OneDrive-Machine-lgpo.txt`. Thêm tenant: sửa bảng `$Tenants` trong `T8` và copy một launcher.)
 
+- **Template mặc định là tenant KIA**: máy KIA chỉ cần `T3`, không chạy `L8`. Chỉ nhóm máy của **tenant phụ** (SNP, KSL, LAV, CIT, DTC) chạy `L8_KFM_<TEN>` sau khi `T3` đã deploy xong cho toàn bộ clients; mỗi lần `T3` deploy template mới thì chạy lại `L8` cho các nhóm này.
 - Chọn đúng nhóm máy cho từng launcher trong Action1 (nhóm máy của công ty nào dùng launcher công ty đó). Máy Entra joined mà launcher sai tenant sẽ bị `T8` dừng, exit 1, không ghi policy.
 - **Máy Entra joined**: `SilentAccountConfig` đăng nhập OneDrive bằng tài khoản Windows, sau đó `KFMSilentOptIn` chuyển Desktop/Documents/Pictures. **Máy Workgroup**: `SilentAccountConfig` không có tác dụng (tài khoản Windows không phải danh tính Entra), người dùng đăng nhập OneDrive bằng tay một lần với đúng tenant, sau đó KFM tự chuyển.
 - Policy mức máy; người dùng đăng xuất/đăng nhập lại (hoặc khởi động lại OneDrive) để OneDrive đọc policy.

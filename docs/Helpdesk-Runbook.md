@@ -20,7 +20,7 @@ Template (`Templates/Win11/GPO-Template.zip`) được dựng trên máy của *
 |---|---|---|
 | `AllowTenantList` (6 tenant) | **Chung** | Không |
 | `EnableSyncAdminReports`, `SilentAccountConfig`, `FilesOnDemandEnabled`, `KFMBlockOptOut` | **Chung** | Không |
-| **`KFMSilentOptIn`** (Tenant ID) | **Đặc thù từng công ty**: đang là tenant KIA | **Chạy `L8_KFM_<TEN>`** để ghi đè bằng Tenant ID đúng |
+| **`KFMSilentOptIn`** (Tenant ID) | **Đặc thù từng công ty**: đang là tenant KIA | **Chạy `L8_KFM_<TEN>`** để ghi đè bằng Tenant ID đúng. **Máy KIA không cần chạy** (template đã đúng) |
 | **`TenantAutoMount`** (14 thư viện SharePoint) | **Đặc thù từng công ty**: toàn thư viện của KIA | **Làm tay** theo mục 3: xuất thư viện của tenant đó rồi áp |
 | SRP Non-Admin (whitelist ứng dụng) | **Chung** | Không |
 
@@ -28,12 +28,12 @@ Template (`Templates/Win11/GPO-Template.zip`) được dựng trên máy của *
 
 ## 2. Cấu hình chung + KFM đặc thù: chạy trên Action1 (mỗi lần có template mới)
 
-Thứ tự cố định: **T3 → L8**. Mỗi lần T3 thực sự deploy (SHA256 template đổi), nó **xóa `Registry.pol` cũ** nên KFM đúng tenant và TenantAutoMount của tenant phụ **mất**, phải áp lại.
+Thứ tự cố định: **T3 cho toàn bộ clients → L8 cho máy tenant phụ**. Máy KIA chỉ cần T3. Mỗi lần T3 thực sự deploy (SHA256 template đổi), nó **xóa `Registry.pol` cũ** nên KFM đúng tenant và TenantAutoMount của tenant phụ **mất**, phải áp lại.
 
 | Bước | Việc | Chạy ở đâu | Cách |
 |---|---|---|---|
 | 1 | Deploy template | Mọi máy | Action1 chạy `A/L3_Run_T3.ps1` (nhóm Test trước) |
-| 2 | **KFM đúng tenant** | Mọi máy | Action1 chạy `A/L8_KFM_<TEN>.ps1` cho **nhóm máy của công ty đó**. **KIA cũng chạy** để có log và kiểm tra |
+| 2 | **KFM đúng tenant (chỉ tenant phụ)** | Máy của SNP, KSL, LAV, CIT, DTC | Sau khi bước 1 xong cho toàn bộ clients, Action1 chạy `A/L8_KFM_<TEN>.ps1` cho **nhóm máy của công ty đó**. **Máy KIA bỏ qua bước này** (template mặc định là KIA) |
 | 3 | **TenantAutoMount: cấu hình đặc thù của công ty thành viên** | Máy công ty thành viên | **Làm tay**, xem mục 3 |
 | 4 | Người dùng đăng xuất/đăng nhập lại (hoặc khởi động lại OneDrive). Máy có SRP mới thì khởi động lại máy | Mọi máy | Báo người dùng |
 
@@ -76,6 +76,7 @@ gpupdate /force
 | **Máy Workgroup** (không join Entra ID) | `SilentAccountConfig` không có tác dụng. Người dùng **đăng nhập OneDrive bằng tay một lần** với đúng tenant; sau đó KFM tự chuyển. Launcher L8 vẫn chạy được (dùng tenant do launcher chỉ định) |
 | Máy còn **Folder Redirection** từ GPO domain cũ | Bỏ redirect trước, nếu không KFM không chuyển được |
 | Người dùng thuộc **nhiều tenant** (tài khoản Guest) | KFM im lặng chỉ nhận **một** Tenant ID; chọn tenant chính của máy |
+| Máy Entra joined vào **KIA** nhưng người dùng thuộc **tenant phụ** (tài khoản Guest) | T8 so tenant của **máy** với launcher nên sẽ dừng (exit 1). Nếu đúng ý, thêm dòng `$env:KFM_FORCE = "1"` vào launcher `L8_KFM_<TEN>` của nhóm máy đó để ép |
 | Máy đổi sang tenant khác | Chạy lại `L8_KFM_<TEN mới>`; nếu máy Entra joined thuộc tenant cũ thì T8 dừng, đặt `KFM_FORCE=1` để ép |
 
 ## 5. Lỗi thường gặp (xem log trên máy)

@@ -36,7 +36,7 @@ flowchart TB
         direction TB
         C1["Chọn nhóm máy<br/>Test hoặc Prod"]
         C2["L3_Run_T3.ps1<br/>(Win10 ép Win11: L3b_Run_T3_Win11.ps1)"]
-        C3["L8_KFM_KIA|SNP|KSL|LAV|CIT|DTC.ps1<br/>đúng nhóm máy của từng công ty"]
+        C3["L8_KFM_SNP|KSL|LAV|CIT|DTC.ps1<br/>chỉ nhóm máy tenant phụ<br/>(máy KIA: bỏ qua, template đã đúng)"]
         C4["L4_Run_T4.ps1<br/>Rollback"]
     end
 
@@ -91,7 +91,7 @@ flowchart TB
 
 ## Quy tắc quan trọng
 - **T3 trước, L8 sau.** T3 xóa `Registry.pol` cũ nên mỗi lần T3 **thực sự deploy** (ZIP có SHA256 mới) thì phải chạy lại L8. Nếu T3 bỏ qua (ZIP không đổi) thì L8 giữ nguyên.
-- Template mẫu hiện có `KFMSilentOptIn` = tenant KIA (`6fcf7bf2-...`). Máy của 5 tenant còn lại sẽ có giá trị này cho đến khi L8 ghi đè bằng đúng tenant của họ. Vì vậy **cả 6 công ty đều phải chạy L8**, kể cả KIA nếu muốn có log kiểm tra.
+- Template mẫu hiện có `KFMSilentOptIn` = tenant KIA (`6fcf7bf2-...`). Máy của 5 tenant còn lại sẽ có giá trị này cho đến khi L8 ghi đè bằng đúng tenant của họ. Vì vậy **máy của KIA không cần chạy L8** (template đã đúng tenant). Chỉ **5 tenant phụ (SNP, KSL, LAV, CIT, DTC)** chạy `L8_KFM_<TEN>` cho đúng nhóm máy, sau khi deploy template cho toàn bộ clients.
 - Mỗi lần đổi `Policies/*.txt` hoặc script là qua **PR vào `main`**, vì launcher và `.bat` đều tải từ `main`.
 - **Luôn thử nhóm Test** (1-2 máy, gồm một máy Entra joined và một máy Workgroup) trước khi áp cho cả công ty.
 - Template là artifact có SHA256 (`.sha256`): T3 từ chối ZIP sai hash.
