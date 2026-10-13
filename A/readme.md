@@ -146,8 +146,8 @@ Mỗi công ty một Entra ID tenant → mỗi launcher Action1 một tenant; lo
 
 | Tên | Launcher (dán vào Action1) | Tenant ID |
 |---|---|---|
-| SNP | `A/L8_KFM_SNP.ps1` | `4be02620-368a-4c1c-81da-d298040b2d92` |
 | KIA | `A/L8_KFM_KIA.ps1` | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` |
+| SNP | `A/L8_KFM_SNP.ps1` | `4be02620-368a-4c1c-81da-d298040b2d92` |
 | KSL | `A/L8_KFM_KSL.ps1` | `692eb525-c279-4d74-a010-638ac401a7d9` |
 | LAV | `A/L8_KFM_LAV.ps1` | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` |
 | CIT | `A/L8_KFM_CIT.ps1` | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` |

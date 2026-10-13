@@ -36,7 +36,7 @@ flowchart TB
         direction TB
         C1["Chọn nhóm máy<br/>Test hoặc Prod"]
         C2["L3_Run_T3.ps1<br/>(Win10 ép Win11: L3b_Run_T3_Win11.ps1)"]
-        C3["L8_KFM_SNP|KIA|KSL|LAV|CIT|DTC.ps1<br/>đúng nhóm máy của từng công ty"]
+        C3["L8_KFM_KIA|SNP|KSL|LAV|CIT|DTC.ps1<br/>đúng nhóm máy của từng công ty"]
         C4["L4_Run_T4.ps1<br/>Rollback"]
     end
 

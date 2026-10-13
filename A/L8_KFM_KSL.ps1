@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 # ===== CAU HINH =====
 $Branch = "main"
 $ScriptPath = "A/T8_Apply_OneDrive_KFM.ps1"
-$env:KFM_TENANT = "KSL"   # SNP | KIA | KSL | LAV | CIT | DTC (T8 doi chieu voi tenant cua may Entra joined)
+$env:KFM_TENANT = "KSL"   # KIA | SNP | KSL | LAV | CIT | DTC (T8 doi chieu voi tenant cua may Entra joined)
 # ====================
 
 $url = ("https://raw.githubusercontent.com/JaxVN/LGPO/{0}/{1}?t={2}" -f $Branch, $ScriptPath, [DateTime]::UtcNow.Ticks)   # ?t= tranh cache CDN

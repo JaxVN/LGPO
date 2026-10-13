@@ -2,7 +2,7 @@
 # vao LOCAL GPO bang LGPO /t (Policies/OneDrive-KFM-lgpo.txt). Khong can domain: may Workgroup hoac join Entra ID.
 #
 # Chon tenant:
-#   - Launcher A/L8_KFM_<TEN>.ps1 dat $env:KFM_TENANT = SNP|KIA|KSL|LAV|CIT|DTC (hoac Tenant ID dang GUID)
+#   - Launcher A/L8_KFM_<TEN>.ps1 dat $env:KFM_TENANT = KIA|SNP|KSL|LAV|CIT|DTC (hoac Tenant ID dang GUID)
 #   - Khong dat KFM_TENANT: may Entra joined tu lay Tenant ID tu dsregcmd; may Workgroup -> bao loi, thoat 1
 #   - Dat KFM_TENANT ma may Entra joined thuoc tenant KHAC -> dung lai (tranh nham launcher). Ep: $env:KFM_FORCE = "1"
 # Chi them/ghi de cac gia tri KFM/SilentAccountConfig, khong dung toi AllowTenantList/TenantAutoMount.
@@ -14,8 +14,8 @@ $Owner = "JaxVN"; $Repo = "LGPO"; $Branch = "main"
 $Template = "Policies/OneDrive-KFM-lgpo.txt"
 $Token = ""   # Chi can neu repo PRIVATE (PAT quyen Contents: Read)
 $Tenants = [ordered]@{
-    SNP = "4be02620-368a-4c1c-81da-d298040b2d92"
     KIA = "6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8"
+    SNP = "4be02620-368a-4c1c-81da-d298040b2d92"
     KSL = "692eb525-c279-4d74-a010-638ac401a7d9"
     LAV = "fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7"
     CIT = "e9e8ce93-6c8e-48c7-81ec-20fc1841b63c"

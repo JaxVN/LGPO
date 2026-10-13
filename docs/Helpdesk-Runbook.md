@@ -88,7 +88,7 @@ Log: `C:\Soft\GPO-Template\deploy.log` (T3), `C:\Soft\OneDrive-KFM\kfm.log` (T8)
 | `Template khong doi ... bo qua` (T3) | Zip không đổi từ lần deploy trước | Bình thường; không cần chạy lại L8 |
 | `Launcher X ... nhung may thuoc tenant Y` (T8) | Chạy nhầm launcher cho nhóm máy | Dùng đúng `L8_KFM_<TEN>`; hoặc `KFM_FORCE=1` nếu cố ý |
 | `May Workgroup, khong tu nhan duoc tenant` (T8) | Chạy T8 trực tiếp không qua launcher | Dùng `L8_KFM_<TEN>` |
-| `KFM_TENANT '...' khong hop le` (T8) | Tên tenant sai | Chỉ dùng SNP, KIA, KSL, LAV, CIT, DTC hoặc Tenant ID dạng GUID |
+| `KFM_TENANT '...' khong hop le` (T8) | Tên tenant sai | Chỉ dùng KIA, SNP, KSL, LAV, CIT, DTC hoặc Tenant ID dạng GUID |
 | `Kiem tra registry that bai` (T8) | LGPO ghi nhưng giá trị không khớp | Chạy lại, gửi `kfm.log` cho người phụ trách |
 | Máy không chuyển Desktop/Documents/Pictures | Chưa đăng nhập OneDrive đúng tenant, hoặc chưa đăng xuất/đăng nhập lại | Kiểm tra mục 4 |
 | Sự cố sau T3 | — | Action1 chạy `A/L4_Run_T4.ps1` để quay về bản `PreDeploy-*` |

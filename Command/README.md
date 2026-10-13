@@ -4,8 +4,8 @@ File `.bat` **tải về chạy tay** (không qua Action1) trên máy mẫu ho�
 
 | File | Tenant | Tenant ID |
 |---|---|---|
-| `KFM-SNP.bat` | SNP | `4be02620-368a-4c1c-81da-d298040b2d92` |
 | `KFM-KIA.bat` | KIA | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` |
+| `KFM-SNP.bat` | SNP | `4be02620-368a-4c1c-81da-d298040b2d92` |
 | `KFM-KSL.bat` | KSL | `692eb525-c279-4d74-a010-638ac401a7d9` |
 | `KFM-LAV.bat` | LAV | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` |
 | `KFM-CIT.bat` | CIT | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` |
