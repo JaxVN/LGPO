@@ -34,6 +34,7 @@ Các máy khác dùng Action1 **tải ZIP mẫu đó về và deploy** bằng LG
 | `L3b_Run_T3_Win11.ps1` | Action1 (máy đích) | Như `L3` nhưng **ép áp template Win11 (`Templates/Win11`) lên máy bất kỳ**, ví dụ Win10 (đổi `$OsFolder = "Win10"` để ép ngược lại). Launcher tự thay dòng `$OsFolder` trong nội dung T3 tải về nên chạy được cả khi T3 trên repo chưa đọc biến `LGPO_OSFOLDER`; không thấy dòng đó thì dừng, không áp nhầm. Lưu ý: cmd/PowerShell chạy tay – `exit` của T3 đóng luôn cửa sổ PowerShell |
 | `T6_Collect_Domain_Effective.ps1` (+ launcher `L6_Run_T6.ps1`) | **Máy domain**, Action1 | Thu chính sách **đang có hiệu lực** (gồm GPO từ domain) để đối chiếu khi làm GPO cho nhóm WorkGroup: `gpresult` Computer/User (.xml + .html), `reg export` của `HKLM\SOFTWARE\Policies`, `HKLM\…\CurrentVersion\Policies` và (nếu có user đăng nhập) `HKCU` tương ứng → `C:\Soft\GPO-Zip\Domain-Effective.zip`. Bù phần Administrative Templates của GPO domain mà `LGPO /b` (T1) không lấy. **Không dùng để deploy**. Đưa lên repo: trên máy đó chạy `$env:LGPO_ZIP="Domain-Effective.zip"; $env:LGPO_FOLDER="Domain"; .\T2_Upload_Template.ps1` → `Templates/Domain/` |
 | `T7_Export_OneDrive_Libraries.ps1` | **Máy của user** (đăng nhập OneDrive, chạy bằng chính user đó, không phải SYSTEM) | Quét các thư viện SharePoint đang sync (`HKCU\Software\SyncEngines\Providers\OneDrive` + dòng `libraryScope` trong `%LOCALAPPDATA%\Microsoft\OneDrive\settings\Business*\*.ini`) → `C:\Soft\OneDrive-Libraries\OneDrive-TenantAutoMount-lgpo.txt` (policy `TenantAutoMount`, định dạng LGPO text) + `OneDrive-Libraries.csv` (sửa tên rồi chạy lại với `-FromCsv`) + `OneDrive-Libraries-raw.txt` (debug). Áp lên máy khác: `LGPO.exe /t <file>` rồi `gpupdate /force`. Tham số: `-Scope Computer\|User`, `-NoClear` (không xoá giá trị cũ) |
+| `T8_Apply_OneDrive_KFM.ps1` + 6 launcher `L8_KFM_<TEN>.ps1` | Máy đích, Action1 (SYSTEM) | Local GPO (không cần domain), máy **Workgroup hoặc Entra ID joined**: `SilentAccountConfig` + Known Folder Move im lặng (Desktop/Documents/Pictures) bằng `LGPO /t` từ `Policies/OneDrive-KFM-lgpo.txt`. Mỗi tenant một launcher đặt `$env:KFM_TENANT` (bảng bên dưới); máy Entra joined mà launcher sai tenant thì **dừng** (ép: `KFM_FORCE=1`). Không đặt `KFM_TENANT`: máy Entra joined tự lấy tenant từ `dsregcmd`, máy Workgroup báo lỗi. Cài LGPO nếu thiếu, kiểm registry sau khi áp, log `C:\Soft\OneDrive-KFM\kfm.log` |
 | `T2_Upload_Template.ps1` | Laptop mẫu 655, **chạy tay** | Đẩy ZIP + SHA256 lên `Templates/Win10/` hoặc `Templates/Win11/` (tự nhận theo build Windows của máy mẫu: build ≥ 22000 = Win11) qua GitHub API. Cần PAT (Contents: Read & write) – nhập khi được hỏi hoặc đặt `$env:GITHUB_TOKEN`. Không chạy qua Action1 |
 | `T3_Deploy_Template.ps1` | Máy đích, Action1 | Cài LGPO nếu thiếu → tải ZIP đúng bản OS (`Templates/Win10` hoặc `Win11`, tự nhận theo build; đặt biến môi trường `LGPO_OSFOLDER` (vd `Win11`) để ép) + **kiểm SHA256** → backup hiện trạng `PreDeploy-*` → xoá `Registry.pol` cũ → `LGPO /g` + `/un` + `/ua` → `gpupdate`. ZIP không đổi so với lần trước thì bỏ qua |
 | `T4_Rollback_PreDeploy.ps1` | Máy đích, Action1 | Khôi phục về bản `PreDeploy-*` mới nhất (trước lần T3 gần nhất) |
@@ -134,6 +135,28 @@ Cột `Domain` đọc cả `Templates/Domain/GPO-Template.zip` (T1, Security Set
 ## Cấu hình bằng file `.reg`
 
 Thư mục [`Regedit/`](../Regedit/README.md) chứa các file `.reg` nhập trực tiếp vào registry (không qua PowerShell/Local GPO): OneDrive `AllowTenantList` (6 tenant) và `TenantAutoMount` (14 thư viện), kèm file gỡ.
+
+## OneDrive Known Folder Move theo tenant (T8 + L8)
+
+Mỗi công ty một Entra ID tenant → mỗi launcher Action1 một tenant; logic nằm chung trong `T8`, nên sửa một chỗ là cả 6 launcher dùng bản mới.
+
+| Tên | Launcher (dán vào Action1) | Tenant ID |
+|---|---|---|
+| SNP | `A/L8_KFM_SNP.ps1` | `4be02620-368a-4c1c-81da-d298040b2d92` |
+| KIA | `A/L8_KFM_KIA.ps1` | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` |
+| KSL | `A/L8_KFM_KSL.ps1` | `692eb525-c279-4d74-a010-638ac401a7d9` |
+| LAV | `A/L8_KFM_LAV.ps1` | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` |
+| CIT | `A/L8_KFM_CIT.ps1` | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` |
+| DTC | `A/L8_KFM_DTC.ps1` | `02cc35ba-57a1-438b-8ae4-f68de204fe24` |
+
+(Khớp với `AllowTenantList` trong `Policies/OneDrive-Machine-lgpo.txt`. Thêm tenant: sửa bảng `$Tenants` trong `T8` và copy một launcher.)
+
+- Chọn đúng nhóm máy cho từng launcher trong Action1 (nhóm máy của công ty nào dùng launcher công ty đó). Máy Entra joined mà launcher sai tenant sẽ bị `T8` dừng, exit 1, không ghi policy.
+- **Máy Entra joined**: `SilentAccountConfig` đăng nhập OneDrive bằng tài khoản Windows, sau đó `KFMSilentOptIn` chuyển Desktop/Documents/Pictures. **Máy Workgroup**: `SilentAccountConfig` không có tác dụng (tài khoản Windows không phải danh tính Entra), người dùng đăng nhập OneDrive bằng tay một lần với đúng tenant, sau đó KFM tự chuyển.
+- Policy mức máy; người dùng đăng xuất/đăng nhập lại (hoặc khởi động lại OneDrive) để OneDrive đọc policy.
+- Xung đột: nếu máy còn **Folder Redirection** từ GPO domain cũ thì KFM không chuyển được; bỏ redirect trước.
+- Kiểm tra: `reg query "HKLM\SOFTWARE\Policies\Microsoft\OneDrive" /v KFMSilentOptIn`.
+- Launcher tải `T8` và file mẫu từ nhánh `main` của repo, nên chỉ chạy được sau khi merge vào `main` (hoặc đổi `$Branch`).
 
 ## Policy OneDrive bằng LGPO text
 
