@@ -1,0 +1,54 @@
+; OneDrive - dang nhap im lang (SilentAccountConfig) + Known Folder Move (Desktop/Documents/Pictures), muc may (Local GPO)
+; File MAU: YOUR-TENANT-ID-HERE duoc script A/T8_Apply_OneDrive_KFM.ps1 thay bang Tenant ID that (6 launcher A/L8_KFM_*.ps1).
+; Ap tay:  thay YOUR-TENANT-ID-HERE roi chay  LGPO.exe /t OneDrive-KFM-lgpo.txt
+; Chi them/ghi de dung cac muc ben duoi, khong dung toi policy OneDrive khac (AllowTenantList, TenantAutoMount...).
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+SilentAccountConfig
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMSilentOptIn
+SZ:YOUR-TENANT-ID-HERE
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMSilentOptInDesktop
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMSilentOptInDocuments
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMSilentOptInPictures
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMSilentOptInWithNotification
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMBlockOptOut
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+FilesOnDemandEnabled
+DWORD:1
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMBlockOptIn
+DELETE
+
+Computer
+SOFTWARE\Policies\Microsoft\OneDrive
+KFMOptInWithWizard
+DELETE

@@ -7,6 +7,7 @@
 | `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 40 rule Unrestricted (gồm MicroSIP) + 1 hash rule `vfp7.exe` + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
 | `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện, tên giá trị dạng `Ke_toan - Documents`) |
+| `OneDrive-KFM-lgpo.txt` | **LGPO text mẫu** – `SilentAccountConfig` + Known Folder Move im lặng (Desktop/Documents/Pictures), mức máy. Chứa placeholder `YOUR-TENANT-ID-HERE`; script `A/T8_Apply_OneDrive_KFM.ps1` (6 launcher `A/L8_KFM_<TEN>.ps1`) thay bằng Tenant ID rồi áp bằng `LGPO /t`. Xem mục *OneDrive Known Folder Move theo tenant* trong `A/readme.md` |
 
 ## Áp `OneDrive-Machine-lgpo.txt` lên máy mẫu (CMD Administrator)
 

@@ -1,0 +1,33 @@
+﻿Repo,Action 1,Usage,Note
+A/T1_Backup_Template.ps1,A/L1_Run_T1.ps1,Laptop mẫu: backup Local GPO + GPO Admin/Non-Admin -> C:\Soft\GPO-Zip\GPO-Template.zip (+ .sha256),= T1a + T1b + T1c. Cần LGPO.exe (C_Deloy LGPO Part1). Chỉ lấy policy đi qua Local GPO
+A/T1a_Backup_LGPO.ps1,A/L1a_Run_T1a.ps1,Debug T1 bước 1: LGPO /b,Chạy theo thứ tự T1a -> T1b -> T1c; T1a xóa thư mục build cũ
+A/T1b_Extra_Manifest.ps1,A/L1b_Run_T1b.ps1,Debug T1 bước 2: copy GPO Non-Admin/Admin + manifest.json,Đọc C:\Soft\GPO-Template-Build\ do T1a tạo
+A/T1c_Zip_Template.ps1,A/L1c_Run_T1c.ps1,Debug T1 bước 3: nén zip + SHA256,Đọc thư mục build của T1a/T1b
+A/T2_Upload_Template.ps1,"Không (chạy tay, cần PAT cá nhân)",Laptop mẫu: đẩy GPO-Template.zip + .sha256 lên Templates/Win10|Win11 qua GitHub API,Chạy sau T1. Thư mục tự chọn theo build Windows (>=22000 = Win11). Biến LGPO_ZIP/LGPO_FOLDER để upload zip khác (T6)
+A/T3_Deploy_Template.ps1,A/L3_Run_T3.ps1,"Máy đích: tải zip mẫu, kiểm SHA256, backup PreDeploy, xóa Registry.pol cũ, LGPO /g /un /ua, gpupdate",Cài LGPO nếu thiếu (LGPO.zip). Đọc Templates/Win10|Win11. Test 1-2 máy trước. Chạy TRƯỚC L8 (T3 xóa Registry.pol cũ)
+A/L3b_Run_T3_Win11.ps1,Chính nó (launcher),Máy đích Win10: ép áp Templates/Win11,Đổi $OsFolder để ép ngược lại; gọi T3
+A/T4_Rollback_PreDeploy.ps1,A/L4_Run_T4.ps1,Máy đích: khôi phục về bản PreDeploy-* gần nhất,Dùng khi T3 gây sự cố
+A/T6_Collect_Domain_Effective.ps1,A/L6_Run_T6.ps1,"Máy domain: thu policy đang hiệu lực (gpresult, reg export) -> Domain-Effective.zip","Chỉ để đối chiếu, không deploy. Upload bằng T2 (LGPO_ZIP/LGPO_FOLDER=Domain) -> Templates/Domain"
+A/T7_Export_OneDrive_Libraries.ps1,"Không (chạy bằng chính user, không phải SYSTEM)",Quét thư viện SharePoint đang sync -> file LGPO text TenantAutoMount + CSV,Kết quả áp bằng LGPO /t (xem Policies/OneDrive-Machine-lgpo.txt)
+A/T8_Apply_OneDrive_KFM.ps1,A/L8_KFM_SNP|KSL|LAV|CIT|DTC.ps1 (5 launcher cho tenant phụ) + A/L8_KFM_KIA.ps1 (tùy chọn),Máy đích: SilentAccountConfig + Known Folder Move vào Local GPO bằng LGPO /t,"Launcher đặt KFM_TENANT; máy Entra joined sai tenant thì dừng (KFM_FORCE=1 để ép). Tải Policies/OneDrive-KFM-lgpo.txt, cài LGPO nếu thiếu. Chạy SAU T3. Máy KIA không cần chạy (template mặc định KIA)"
+Policies/OneDrive-KFM-lgpo.txt,(được T8 / Command/KFM-*.bat tải về),"File mẫu LGPO text cho KFM, có placeholder YOUR-TENANT-ID-HERE",Không áp trực tiếp khi chưa thay Tenant ID
+Command/KFM-KIA|SNP|KSL|LAV|CIT|DTC.bat,"Không (tải về chạy tay, CMD Administrator)",Máy mẫu / máy đơn lẻ: cùng việc với T8 nhưng bằng .bat,Tải Policies/OneDrive-KFM-lgpo.txt + LGPO.zip từ nhánh main (biến BRANCH). Hỏi lại nếu máy Entra joined khác tenant
+Policies/OneDrive-Machine-lgpo.txt,"Không (curl + LGPO /t, hoặc dán script tải về)","OneDrive mức máy: EnableSyncAdminReports, AllowTenantList (6 tenant), TenantAutoMount (14 thư viện KIA)",DELETEALLVALUES xóa giá trị cũ trong key trước khi ghi. Không đụng KFM
+"Policies/OneDrive-AutoMount-<TEN>-lgpo.txt (chưa có, tạo bằng T7)",Chưa có launcher (làm tay: curl + LGPO /t),"Cấu hình đặc thù của từng công ty thành viên (tenant phụ SNP, KSL, LAV, CIT, DTC): TenantAutoMount riêng",Template chỉ có 14 thư viện KIA. Phải áp lại sau mỗi lần T3 deploy. Xem docs/Helpdesk-Runbook.md mục 3
+Policies/SRP-NonAdmin-lgpo.txt,Không (curl + LGPO /t),SRP whitelist cho Non-Administrators (CLEAR rồi ghi lại),"Thử trên VM trước, cần reboot. Gỡ: SRP-NonAdmin-remove-lgpo.txt"
+Policies/SRP-NonAdmin-remove-lgpo.txt,Không (curl + LGPO /t),Gỡ SRP của Non-Administrators (rollback),Reboot sau khi gỡ
+"Policies/Machine-registry.pol, NonAdmin-Registry.pol",Không,Registry.pol tham khảo (bản cũ / đang trống),Không dùng để deploy
+Policies/admx/,Không,ADMX Office + OneDrive (bản trong repo),Nguồn cho Grok/S000.ps1 (PolicyDefinitions)
+Templates/Win10|Win11/GPO-Template.zip (+ .sha256),Được T3 tải về,Gói GPO mẫu cho Win10 / Win11,"Sinh ra bởi T1, đẩy lên bởi T2, dùng bởi T3/T4"
+Templates/Domain/,Không,Policy thu từ máy domain (T6) để đối chiếu,Chứa tên máy/OU/IP nội bộ; cân nhắc repo private
+"Templates/build_compare_csv.py, build_treeview.py",Không,Sinh Template-Compare.csv và docs/Template-Treeview.html,Chạy bằng python3 sau khi cập nhật template
+A/C_Deloy LGPO Part1,Dán thẳng vào Action1,Tải + giải nén LGPO.zip vào C:\Soft\SCT,"T3, T8, Command/*.bat đã tự cài LGPO nên không bắt buộc"
+A/C_Deloy_Policy_P0,Dán thẳng vào Action1,Gọi Grok/S000.ps1: cài ADMX Office/OneDrive vào C:\Windows\PolicyDefinitions,Chạy trên laptop mẫu TRƯỚC khi cấu hình gpedit
+A/C_Deloy_Policy_P2,Dán thẳng vào Action1 (cũ),Backup cũ,Đã bị T1 thay thế
+LGPO.zip,Được T3/T8/.bat tải về,"Chứa LGPO.exe, giải nén vào C:\Soft\SCT\LGPO_30",Nguồn: Microsoft Security Compliance Toolkit
+Grok/S000.ps1,A/C_Deloy_Policy_P0,Tải PolicyDefinitions -> C:\Soft\LGPO -> C:\Windows\PolicyDefinitions,Cần Administrator
+Grok/S001.ps1,Dán thẳng (cũ),KFM + ẩn ổ C bằng ghi registry trực tiếp,Cũ: không vào Local GPO nên T1 không backup được. KFM đã có bản mới: T8 / L8
+Grok/S002.ps1,Dán thẳng (cũ),"Office chỉ lưu OneDrive Business + SharePoint (ẩn This PC, OneDrive cá nhân)","Ghi HKCU/registry trực tiếp, không vào ZIP; muốn vào ZIP phải cấu hình bằng gpedit trên máy mẫu"
+"Grok/S003.ps1, S01.ps1, S02.ps1, S03.ps1",Dán thẳng (cũ),Restore / Backup / Zip / Upload SharePoint,Pipeline cũ; S01-S02 bị T1 thay thế; S02/S03 (SharePoint) chưa làm lại
+Grok/SRP.ps1,Dán thẳng (cũ),Tạo SRP path rule cho Non-Administrators bằng script,Bản mới: Policies/SRP-NonAdmin-lgpo.txt (LGPO /t)
+Regedit/*.reg,Không (nhập tay),"OneDrive AllowTenantList, TenantAutoMount (+ file gỡ)",Ghi thẳng registry; bản mới: Policies/OneDrive-Machine-lgpo.txt
