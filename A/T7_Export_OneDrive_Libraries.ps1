@@ -16,13 +16,14 @@
 #   .\T7_Export_OneDrive_Libraries.ps1                         # quet may nay
 #   .\T7_Export_OneDrive_Libraries.ps1 -FromCsv C:\Soft\OneDrive-Libraries\OneDrive-Libraries.csv   # tao lai .txt tu CSV da sua
 #   .\T7_Export_OneDrive_Libraries.ps1 -Scope User -NoClear    # ghi vao User Configuration, khong xoa gia tri cu
+#   .\T7_Export_OneDrive_Libraries.ps1 -Scope "User:Non-Administrators"   # chi nhom Non-Administrators (MLGPO); Action1: dung L7_Run_T7.ps1
 # Ap tren may dich (Admin):
 #   LGPO.exe /t "C:\Soft\OneDrive-Libraries\OneDrive-TenantAutoMount-lgpo.txt" ; gpupdate /force
 #   (roi thoat/mo lai OneDrive hoac dang xuat/dang nhap)
 
 param(
     [string]$OutDir  = "C:\Soft\OneDrive-Libraries",
-    [ValidateSet("Computer","User")][string]$Scope = "Computer",
+    [ValidateSet("Computer","User","User:Non-Administrators","User:Administrators")][string]$Scope = "Computer",
     [switch]$NoClear,          # khong them khoi DELETEALLVALUES (giu cac gia tri TenantAutoMount co san tren may dich)
     [string]$FromCsv = ""      # bo qua buoc quet, doc CSV (cot Name, Value) de tao lai file .txt
 )
