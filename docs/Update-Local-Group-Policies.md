@@ -122,7 +122,7 @@ Cách đọc: mỗi bảng là một nhánh cấu hình; dòng **in đậm** là
 | 50 | `F:\KIENTHINH\KIENTHINH\WS\vfp7.exe` | Visual FoxPro |
 | 51 | `F:\KIENTHINH\KIENTHINH_2015\WS\` | KIENTHINH |
 
-> **Cập nhật file cấu hình (`Policies/SRP-NonAdmin-lgpo.txt`):** file nạp đầy đủ 51 rule ở bảng trên, kể cả rule gắn domain cũ (Sysvol, `kiena.local`, `stcvm003`), `Microsoft\*`, `F:\*\*\*\*` và `%UserProfile%\Desktop`. Ngoài ra có thêm rule bổ sung: Office, OneDrive, Synology Drive, MicroSIP, updater NSIS, `ViberBA.exe` (bộ cài Viber trong Temp, đường dẫn 8.3 kiểu `NGUYEN~1`) va `__PSScriptPolicyTest_*`. Tổng cộng **63 path Unrestricted** và 1 path Disallowed. Các rule rộng (`Desktop`, `Microsoft\*`, `F:\*\*\*\*`) làm giảm mức bảo vệ của SRP, cần người phê duyệt xác nhận.
+> **Cập nhật file cấu hình (`Policies/SRP-NonAdmin-lgpo.txt`):** file nạp đầy đủ 51 rule ở bảng trên, kể cả rule gắn domain cũ (Sysvol, `kiena.local`, `stcvm003`), `Microsoft\*`, `F:\*\*\*\*` và `%UserProfile%\Desktop`. Ngoài ra có thêm rule bổ sung: Office, OneDrive, Synology Drive, MicroSIP, updater NSIS, `ViberBA.exe` (bộ cài Viber trong Temp, đường dẫn 8.3 kiểu `NGUYEN~1`) và `__PSScriptPolicyTest_*`. Tổng cộng **63 path Unrestricted** và 1 path Disallowed. Các rule rộng (`Desktop`, `Microsoft\*`, `F:\*\*\*\*`) làm giảm mức bảo vệ của SRP, cần người phê duyệt xác nhận.
 
 #### B. Chặn chạy (Disallowed) – 1 path
 
