@@ -48,6 +48,8 @@ $txtFile   = Join-Path $OutDir "OneDrive-TenantAutoMount-lgpo.txt"
 $csvFile   = Join-Path $OutDir "OneDrive-Libraries.csv"
 $rawFile   = Join-Path $OutDir "OneDrive-Libraries-raw.txt"
 $guidRx    = '\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}?'
+# libraryScope = <n> <scopeKey> <t> "<site>" "<lib>" <t> "<url>" "<tenantId>" <siteId32> <webId32> <listId32> ...
+$scopeRx   = '(?i)^\s*libraryScope\s*=\s*\d+\s+(\S+)\s+\d+\s+"[^"]*"\s+"[^"]*"\s+\d+\s+"[^"]*"\s+"([^"]*)"\s+([0-9a-f]{32})\s+([0-9a-f]{32})\s+([0-9a-f]{32})'
 
 function Show-Err {
     param($ErrRec)
@@ -84,16 +86,49 @@ function Write-LgpoFile {
     [IO.File]::WriteAllText($txtFile, $sb.ToString(), [Text.Encoding]::ASCII)
 }
 
-function Read-IniLines {
-    # Doc file ini ke ca khi OneDrive dang mo (FileShare.ReadWrite); tu nhan UTF-16/UTF-8 theo BOM
+function Get-BytesShared {
+    # Doc het file ke ca khi OneDrive dang mo (FileShare.ReadWrite)
     param([string]$Path)
     $fs = $null
     try {
         $fs = New-Object IO.FileStream($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite)
-        $sr = New-Object IO.StreamReader($fs, [Text.Encoding]::Default, $true)
-        $txt = $sr.ReadToEnd()
-        return @($txt -split "`r?`n")
-    } catch { return @() } finally { if ($fs) { $fs.Dispose() } }
+        $ms = New-Object IO.MemoryStream
+        $fs.CopyTo($ms)
+        return ,($ms.ToArray())
+    } catch { return ,([byte[]]@()) } finally { if ($fs) { $fs.Dispose() } }
+}
+
+function Get-TextAuto {
+    # byte -> chuoi: nhan BOM (UTF-8, UTF-16 LE/BE); khong co BOM thi doan UTF-16 theo ty le byte 0, con lai UTF-8
+    param([byte[]]$B)
+    $enc = "utf8"; $text = ""
+    if ($B.Length -ge 3 -and $B[0] -eq 0xEF -and $B[1] -eq 0xBB -and $B[2] -eq 0xBF) { $enc = "utf8-bom"; $text = [Text.Encoding]::UTF8.GetString($B, 3, $B.Length - 3) }
+    elseif ($B.Length -ge 2 -and $B[0] -eq 0xFF -and $B[1] -eq 0xFE) { $enc = "utf16le-bom"; $text = [Text.Encoding]::Unicode.GetString($B, 2, $B.Length - 2) }
+    elseif ($B.Length -ge 2 -and $B[0] -eq 0xFE -and $B[1] -eq 0xFF) { $enc = "utf16be-bom"; $text = [Text.Encoding]::BigEndianUnicode.GetString($B, 2, $B.Length - 2) }
+    else {
+        $n = [Math]::Min($B.Length, 1024); $odd = 0; $even = 0
+        for ($i = 0; $i -lt $n; $i++) { if ($B[$i] -eq 0) { if (($i % 2) -eq 1) { $odd++ } else { $even++ } } }
+        if ($odd -gt ($n / 8) -and $odd -gt (2 * $even)) { $enc = "utf16le"; $text = [Text.Encoding]::Unicode.GetString($B) }
+        elseif ($even -gt ($n / 8) -and $even -gt (2 * $odd)) { $enc = "utf16be"; $text = [Text.Encoding]::BigEndianUnicode.GetString($B) }
+        else { $text = [Text.Encoding]::UTF8.GetString($B) }
+    }
+    return [pscustomobject]@{ Enc = $enc; Text = $text }
+}
+
+function Read-IniLines {
+    # Doc file ini ke ca khi OneDrive dang mo; tu nhan encoding (ghi lai vao $script:IniEnc de debug)
+    param([string]$Path)
+    $t = Get-TextAuto (Get-BytesShared $Path)
+    $script:IniEnc = $t.Enc
+    return @($t.Text -split "`r?`n")
+}
+
+function ConvertTo-GuidBraced {
+    # 32 ky tu hex (hoac GUID co/khong dau gach, ngoac) -> {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+    param([string]$s)
+    $h = ($s -replace '[{}\-]', '').ToLower()
+    if ($h -notmatch '^[0-9a-f]{32}$') { return "" }
+    return ('{' + ('{0}-{1}-{2}-{3}-{4}' -f $h.Substring(0,8), $h.Substring(8,4), $h.Substring(12,4), $h.Substring(16,4), $h.Substring(20,12)) + '}')
 }
 
 function Get-SafeProps {
@@ -149,10 +184,19 @@ try {
         if (-not (Test-Path $iniDir)) { Write-Output "  (khong co thu muc ini: $iniDir)"; $raw.Add("### (khong co thu muc ini $iniDir)"); continue }
         foreach ($f in Get-ChildItem $iniDir -File -ErrorAction SilentlyContinue) {
             $lines = @(Read-IniLines $f.FullName)
-            $raw.Add("### file $($f.Name) size=$($f.Length) lines=$($lines.Count)")
+            $raw.Add("### file $($f.Name) size=$($f.Length) lines=$($lines.Count) enc=$script:IniEnc")
             foreach ($l in $lines) {
                 if ($l -match '(?i)^\s*libraryScope\s*=') {
-                    $scopeLines += [pscustomobject]@{ Acct = $a.PSChildName; Tenant = $tenant; Line = $l }
+                    $o = [pscustomobject]@{ Acct = $a.PSChildName; Tenant = $tenant; Line = $l; Key = ""; TenantId = ""; SiteId = ""; WebId = ""; ListId = "" }
+                    $sm = [regex]::Match($l, $scopeRx)
+                    if ($sm.Success) {
+                        $o.Key = $sm.Groups[1].Value
+                        $o.TenantId = $sm.Groups[2].Value.Trim('{','}').ToLower()
+                        $o.SiteId = ConvertTo-GuidBraced $sm.Groups[3].Value
+                        $o.WebId  = ConvertTo-GuidBraced $sm.Groups[4].Value
+                        $o.ListId = ConvertTo-GuidBraced $sm.Groups[5].Value
+                    }
+                    $scopeLines += $o
                     $raw.Add("[$($f.Name)] $l")
                 } elseif ($f.Extension -eq '.ini' -and $l -match '(?i)scope|siteid|listid|webid|library') {
                     $raw.Add("[$($f.Name)] (other) $l")
@@ -161,6 +205,26 @@ try {
         }
     }
     Write-Output "Dong libraryScope tim thay: $($scopeLines.Count)"
+    if ($scopeLines.Count -eq 0) {
+        # Khong doc duoc dong libraryScope nao: quet byte cua MOI file trong thu muc settings (ASCII va UTF-16) de biet ID nam o dau
+        Write-Output "Khong thay dong libraryScope: quet sau thu muc settings, ket qua ghi trong raw (### deepscan)"
+        $latin1 = [Text.Encoding]::GetEncoding(28591)
+        $pa = 'libraryScope'
+        $pu = (($pa.ToCharArray() | ForEach-Object { [string]$_ + [string][char]0 }) -join '')
+        foreach ($a in $accts) {
+            $iniDir = Join-Path $env:LOCALAPPDATA "Microsoft\OneDrive\settings\$($a.PSChildName)"
+            if (-not (Test-Path $iniDir)) { continue }
+            foreach ($f in @(Get-ChildItem $iniDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Length -lt 200MB })) {
+                $b = Get-BytesShared $f.FullName
+                if ($b.Length -eq 0) { continue }
+                $txt = $latin1.GetString($b)
+                $hitA = ($txt.IndexOf($pa, [StringComparison]::OrdinalIgnoreCase) -ge 0)
+                $hitU = ($txt.IndexOf($pu, [StringComparison]::OrdinalIgnoreCase) -ge 0)
+                $head = (($b[0..([Math]::Min(15, $b.Length - 1))] | ForEach-Object { $_.ToString('x2') }) -join ' ')
+                $raw.Add("### deepscan $($a.PSChildName)\$($f.Name) size=$($f.Length) head=$head libraryScope ascii=$hitA utf16=$hitU")
+            }
+        }
+    }
 
     # ---- 2. Cac thu vien SharePoint dang mount (Providers) ----
     $provRoot = "HKCU:\Software\SyncEngines\Providers\OneDrive"
@@ -186,14 +250,19 @@ try {
         $site = ([regex]::Match($pv.Url, '^https://[^/]+/(?:sites|teams)/[^/]+')).Value
         $webUrl = [uri]::EscapeDataString($site)
 
-        $m = @($scopeLines | Where-Object { $_.Line -like "*$($pv.Key)*" })
+        # khop chinh xac theo scope key (tranh "+3" khop nham "+30", "+4" khop "+40")
+        $m = @($scopeLines | Where-Object { $_.Key -and ($_.Key -ieq $pv.Key) })
+        if ($m.Count -eq 0) { $m = @($scopeLines | Where-Object { -not $_.Key -and ($_.Line -like "*$($pv.Key)*") }) }
         $status = "OK"; $value = ""
         if ($m.Count -eq 0) {
             $status = "MISSING: khong thay dong libraryScope chua $($pv.Key)"
         } else {
             $line = $m[0].Line; $tenant = $m[0].Tenant
             $mm = [regex]::Match($line, 'tenantId=([^&"\s]+)&siteId=([^&"\s]+)&webId=([^&"\s]+)&listId=([^&"\s]+)')
-            if ($mm.Success) {
+            if ($m[0].SiteId -and $m[0].WebId -and $m[0].ListId) {
+                if ($m[0].TenantId) { $tenant = $m[0].TenantId }
+                $s = $m[0].SiteId; $w = $m[0].WebId; $li = $m[0].ListId
+            } elseif ($mm.Success) {
                 $tenant = $mm.Groups[1].Value.Trim('{','}').ToLower()
                 $s = $mm.Groups[2].Value; $w = $mm.Groups[3].Value; $li = $mm.Groups[4].Value
             } else {
