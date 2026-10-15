@@ -31,3 +31,4 @@ Grok/S002.ps1,Dán thẳng (cũ),"Office chỉ lưu OneDrive Business + SharePoi
 "Grok/S003.ps1, S01.ps1, S02.ps1, S03.ps1",Dán thẳng (cũ),Restore / Backup / Zip / Upload SharePoint,Pipeline cũ; S01-S02 bị T1 thay thế; S02/S03 (SharePoint) chưa làm lại
 Grok/SRP.ps1,Dán thẳng (cũ),Tạo SRP path rule cho Non-Administrators bằng script,Bản mới: Policies/SRP-NonAdmin-lgpo.txt (LGPO /t)
 Regedit/*.reg,Không (nhập tay),"OneDrive AllowTenantList, TenantAutoMount (+ file gỡ)",Ghi thẳng registry; bản mới: Policies/OneDrive-Machine-lgpo.txt
+Exception/T9_Apply_AutoMount_NonAdmin.ps1,Exception/L9_AutoMount_PLY-DA.ps1,"Máy đích: ghi danh sách thư viện riêng của bộ phận vào nhánh Non-Administrators bằng LGPO /t (ngoài template)","Chạy sau T3/L3b (T3 xóa danh sách). File danh sách trong Exception/. Xem Exception/README.md"

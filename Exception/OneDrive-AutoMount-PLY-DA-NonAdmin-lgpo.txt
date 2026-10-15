@@ -1,0 +1,211 @@
+; OneDrive - Configure team site libraries to sync automatically (40 thu vien) - bo phan PLY-DA - muc tieu LGPO: User:Non-Administrators
+; Ap bang (CMD Administrator):  LGPO.exe /t "<duong dan>\OneDrive-AutoMount-PLY-DA-NonAdmin-lgpo.txt"  roi  gpupdate /force  va dang xuat/dang nhap lai
+; Chi ghi vao nhanh Non-Administrators (HKCU\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount cua user thuong), KHONG dung vao nhanh Computer (14 thu vien chung cua template).
+; Khoi DELETEALLVALUES o dau chi xoa danh sach TenantAutoMount cu cua nhom Non-Administrators, khong xoa danh sach cua nhanh Computer.
+; Nguon: may STCD00520, ngay 2026-10-15 (T7_Export_OneDrive_Libraries.ps1). Da doi chieu 40/40 thu vien voi ID trong thu muc settings cua OneDrive.
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+*
+DELETEALLVALUES
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-LMCR - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={3b3677a8-0b8c-461e-bced-efe0d2021ab7}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-LMCR&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-H2.07 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={f81d88cb-76a3-437e-a337-0545312af56a}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-H2.07&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-GRAND - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={5307daf6-fc4f-4a20-8d6f-22912b933203}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-GRAND&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-ESTO - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={be145b98-0588-4d48-9d82-bcbae830c326}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-ESTO&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-DAT DAO - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={d0966815-8946-4da5-9fe1-e78727265b8c}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-DATDAO&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-DA GOC - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={34d0e3cc-ff9e-4043-a1c2-119509e931ba}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-DAGOC&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-BELLA-H2.03 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={a713c634-263e-462e-8516-d4f5a894c5d7}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-BELLA-H2.03&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-BELLA-H1.06 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={752434ad-1fdb-4e8e-b53e-5e9a75d54394}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-BELLA-H1.06&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-ALTO-H2.04 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={8f40526d-4135-4626-9752-41622dd5e948}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-ALTO-H2.04&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-ALTO-H2.01 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={ae6e4c7e-d45f-48d9-acb3-6fef8d0ef4e1}&webId={23cc2bef-3dc4-42dd-98cd-b28d4d2151b4}&listId={c9a79332-8130-44e3-a5a8-a2d0b4253df0}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-ALTO-H2.01&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={223d090d-f996-4138-abe2-64e3db1490dc}&webId={74e63b1c-d6d9-4009-8598-23cd642673e1}&listId={a5a71cd2-58c6-491f-a1d6-44f162254bda}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-PY-BAI OM - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={c99688f8-54cf-4028-87b4-bda83c40a74f}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-PY-BAIOM&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-PHAM VIET CHANH - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={fb5ec350-e2b5-4f6d-abc5-ede5827f3c09}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-PHAMVIETCHANH&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-NGAM HOA - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={2ac8be4e-b288-4e07-8fd4-17abcb1665b6}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-NGAMHOA&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 9 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={4563d6dd-eee3-4100-ac9c-5fa51d78e5fd}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV9&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 8 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={33921ff0-312c-45ca-aa25-ad8b78059fc3}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV8&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 6 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={c336a030-9c68-4d10-b6ac-40686c916d3a}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV6&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 5 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={bf67ba89-d70b-4f7d-97fb-18198cd2f605}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV5&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 3 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={e06de641-5138-483d-91e3-bdf9fc05e279}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV3&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 2 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={13ff2d34-ca8e-4ad8-9838-f56dc4542bc7}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV2&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-LAV 1 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={8d36218f-5e37-42bf-987e-4c74ff3b50d9}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-LAV1&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-NB-GALLERIA - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={5d5d56b8-4533-4cea-9b23-4cb51f4da30a}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-NB-GALLERIA&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-M&A - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={af1136c6-93ea-49c3-ae76-8230edf9236b}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-MA&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-VTL-B2.10-12-13 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={9a1b464d-07d1-4144-9745-6c04eb92b736}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-VTL-B2.10-12-13&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-VTL-B1.12 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={965c70a6-054d-49f6-998a-5315838e7161}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-VTL-B1.12&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-VTL-B1.09-B1.11 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={fada4bb5-3ed8-40ee-8f8d-1e7e82d250d6}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-VTL-B1.09-B1.11&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-VP-B1.10-B1.12 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={92c28f48-64a2-497e-aca0-88f9c3fb288d}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-VP-B1.10-B1.12&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-UMT - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={6711b948-8843-433f-9ec8-34ce21ba0b5e}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-UMT&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-SOHO - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={a5fad7a4-e19e-4624-8e2d-5eb30f72a71e}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-SOHO&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-LAV DSG-B2.08 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={28235ff2-d133-487d-9872-ac404fa99340}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-LAVDSG-B2.08&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-HOME-H1.05 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={51621b52-6310-4220-bae6-5eb59156158e}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-HOME-H1.05&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-TIEN DO TONG - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={28735fc4-39aa-4083-80d2-3f80ea033583}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-TIENDOTONG&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-HOME-H1.04 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={e3346007-a1da-4a72-ab97-22b1be114f59}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-HOME-H1.04&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-Q9-TDC DHQG - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={9188e7e8-7b7d-45f7-993c-838d9e97c53c}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-Q9-TDCDHQG&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-CL-H2.08 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={5a9a093f-3134-4515-8896-9f6290c09370}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-CL-H2.08&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-Q9-LONG TRUONG - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={7fb2b0d9-243f-46ed-b13a-d5f2fbca17cb}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-Q9-LONGTRUONG&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-Q9-KDC - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={03571673-a3ed-4efa-88a8-aed03ae2a083}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-Q9-KDC&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-Q8 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={ace30988-131b-4159-bf29-acf200d6fb90}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-Q8&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-PY-QL 25 - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={6275ca71-6674-4b93-b0a3-6e5c7f72848f}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-PY-QL25&version=1
+
+User:Non-Administrators
+SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount
+PLY-DA-PY-KCN NAM PHU YEN - Documents
+SZ:tenantId=6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8&siteId={cf2a8fe8-eaa3-4322-8342-d5182eefae41}&webId={364e22f0-eda6-4f3f-9bfb-4806eb5831ac}&listId={b6f67689-556a-4e55-9c1f-03d74c5a3c0b}&webUrl=https%3A%2F%2Fkienacorp.sharepoint.com%2Fteams%2FPLY-DA-PY-KCNNAMPHUYEN&version=1
+
