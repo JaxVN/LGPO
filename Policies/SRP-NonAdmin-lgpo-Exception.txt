@@ -1,0 +1,49 @@
+; SRP NGOAI LE: cho phep Zalo (cai theo user) - LGPO text, CHI THEM rule, KHONG xoa rule SRP co san
+; Khac SRP-NonAdmin-lgpo.txt: file nay KHONG co lenh CLEAR, nen cac rule dang co trong nhom Non-Administrators duoc giu nguyen.
+; Ap bang (CMD Administrator, SAU KHI da ap SRP-NonAdmin-lgpo.txt):   LGPO.exe /t "<duong dan>\SRP-NonAdmin-lgpo-Exception.txt"   roi   gpupdate /force   va dang xuat/dang nhap lai
+; QUAN TRONG: SRP-NonAdmin-lgpo.txt co CLEAR, ap lai file do se xoa rule ngoai le nay -> phai ap lai file nay sau moi lan ap SRP chinh.
+; Chi ap cho may/user ngoai le. Rule nam trong nhom Non-Administrators nen moi user thuong tren may do deu duoc dung Zalo.
+; Chi cho 1 user: doi dong "User:Non-Administrators" thanh "User:<ten tai khoan>" (LGPO ghi "valid local account": chua kiem tra voi tai khoan Entra ID).
+; Go ngoai le: xoa 2 gia tri bang LGPO (xem README) hoac ap lai SRP-NonAdmin-lgpo.txt (co CLEAR).
+; Kiem tra:  LGPO.exe /parse /u "C:\Windows\System32\GroupPolicyUsers\S-1-5-32-545\User\Registry.pol"  (tim "Zalo")
+
+; ===== Unrestricted: Zalo =====
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f035fa75-26bf-56ad-9445-1bc366adcb43}
+ItemData
+EXSZ:C:\\Users\\*\\AppData\\Local\\Programs\\Zalo\\Zalo-*\\Zalo.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f035fa75-26bf-56ad-9445-1bc366adcb43}
+Description
+SZ:Zalo (thu muc theo phien ban) - ngoai le
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f035fa75-26bf-56ad-9445-1bc366adcb43}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{f035fa75-26bf-56ad-9445-1bc366adcb43}
+LastModified
+QWORD:134365063589340384
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{2a850ea9-1931-56aa-b5d8-5bb19afde013}
+ItemData
+EXSZ:C:\\Users\\*\\AppData\\Local\\Programs\\Zalo\\Zalo.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{2a850ea9-1931-56aa-b5d8-5bb19afde013}
+Description
+SZ:Zalo - ngoai le
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{2a850ea9-1931-56aa-b5d8-5bb19afde013}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{2a850ea9-1931-56aa-b5d8-5bb19afde013}
+LastModified
+QWORD:134365063589340384
