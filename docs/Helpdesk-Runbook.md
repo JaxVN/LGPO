@@ -75,6 +75,29 @@ gpupdate /force
 - Kiểm tra: `reg query "HKLM\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount"`.
 - Chưa có launcher Action1 (`L9`) cho bước này; khi cần tự động có thể bổ sung, giống `L8`.
 
+### 3.3 Thư viện riêng của bộ phận/người dùng: áp vào nhánh Non-Administrators
+
+Danh sách thư viện **đặc thù của từng bộ phận hoặc người dùng** (ví dụ bộ phận PLY-DA có 40 thư viện) **không áp vào nhánh Computer**. Nhánh Computer chỉ giữ 14 thư viện chung của template. Danh sách riêng ghi vào nhánh **Non-Administrators** của máy đó, giống cách đã làm cho máy của Nghi.
+
+1. Trên máy mẫu của bộ phận, user đã Sync đủ thư viện, chạy T7 bằng chính user đó với `-Scope "User:Non-Administrators"` (hoặc chạy mặc định rồi đổi mọi dòng `Computer` trong file `.txt` thành `User:Non-Administrators`):
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Soft\T7_Export_OneDrive_Libraries.ps1 -Scope "User:Non-Administrators"
+   ```
+2. Lưu file lên repo tại `Policies/OneDrive-AutoMount-<BOPHAN>-NonAdmin-lgpo.txt`. Đã có: `OneDrive-AutoMount-PLY-DA-NonAdmin-lgpo.txt` (40 thư viện, lấy từ máy STCD00520).
+3. Khi đổi máy hoặc tạo profile mới cho người cùng bộ phận, trên máy đích chạy CMD **Administrator** (sau T3):
+   ```bat
+   curl -L -o "C:\Soft\SCT\OneDrive-AutoMount-PLY-DA-NonAdmin-lgpo.txt" "https://raw.githubusercontent.com/JaxVN/LGPO/main/Policies/OneDrive-AutoMount-PLY-DA-NonAdmin-lgpo.txt"
+   C:\Soft\SCT\LGPO_30\LGPO.exe /t "C:\Soft\SCT\OneDrive-AutoMount-PLY-DA-NonAdmin-lgpo.txt"
+   gpupdate /force
+   ```
+   Sau đó người dùng đăng xuất và đăng nhập lại.
+4. Kiểm tra sau khi user đăng nhập: `reg query "HKCU\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount"`. Hoặc `LGPO.exe /parse /u "C:\Windows\System32\GroupPolicyUsers\S-1-5-32-545\User\Registry.pol"`.
+
+- Khối `DELETEALLVALUES` trong file chỉ xóa danh sách TenantAutoMount cũ của **nhóm Non-Administrators**, không đụng 14 thư viện chung ở nhánh Computer. Người dùng thấy cả hai danh sách.
+- **Thứ tự bắt buộc:** T3 nạp lại `Registry.pol` của nhóm Non-Administrators từ template nên sẽ **xóa** danh sách bộ phận. Mỗi lần chạy T3 phải áp lại file này.
+- Nhánh Non-Administrators áp cho **mọi user thường trên máy đó**, không riêng một người. Muốn chỉ một tài khoản: đổi `User:Non-Administrators` thành `User:<tên tài khoản>` trong file (LGPO ghi *valid local account*, chưa kiểm với tài khoản Entra ID).
+- User là local admin thì nhánh Non-Administrators không áp. Kiểm tra bằng `net localgroup administrators`.
+
 ## 4. Việc khác cần làm tay tại máy
 | Tình huống | Việc cần làm |
 |---|---|
