@@ -1139,6 +1139,46 @@ Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{0c9970ec
 LastModified
 QWORD:134365059966654912
 
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{8375668a-98a0-573e-b0db-0d7cacfb02f3}
+ItemData
+EXSZ:C:\\Users\\*\\AppData\\Local\\SynologyDrive\\SynologyDrive.app\\bin\\cloud-drive-connect.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{8375668a-98a0-573e-b0db-0d7cacfb02f3}
+Description
+SZ:Synology Drive (connect)
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{8375668a-98a0-573e-b0db-0d7cacfb02f3}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{8375668a-98a0-573e-b0db-0d7cacfb02f3}
+LastModified
+QWORD:134365136908925840
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{a6ae93cc-095f-549b-8419-dbb6575879b7}
+ItemData
+EXSZ:C:\\Users\\*\\AppData\\Local\\SynologyDrive\\SynologyDrive.app\\bin\\cloud-drive-auto-updater.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{a6ae93cc-095f-549b-8419-dbb6575879b7}
+Description
+SZ:Synology Drive (auto updater)
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{a6ae93cc-095f-549b-8419-dbb6575879b7}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{a6ae93cc-095f-549b-8419-dbb6575879b7}
+LastModified
+QWORD:134365136908925840
+
 ; ===== Disallowed =====
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\0\Paths\{e9e007fa-e473-5768-bee9-76435c5f7e1d}
