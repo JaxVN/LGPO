@@ -23,28 +23,40 @@ Cập nhật cấu hình Local Policies, tách rõ phạm vi áp dụng theo hai
 
 ### 3.1. Danh sách chính sách cần cập nhật
 
-| Nhánh cấu hình | Chính sách | Đường dẫn cấu hình | Trạng thái | Giá trị | Tác dụng |
-|---|---|---|---|---|---|
-| User Configuration – Non-Administrators Policy | Restrict saving on non-Cloud locations | `Local Computer\Non-Administrators Policy\User Configuration\Administrative Templates\Microsoft Office 2016\Miscellaneous` | Enabled | 133 | Hạn chế người dùng không thuộc nhóm quản trị lưu tài liệu Office vào vị trí không thuộc cloud; định hướng người dùng lưu Word, Excel, PowerPoint lên môi trường cloud do công ty quản lý. |
-| Computer Configuration – All Users | Allow syncing OneDrive accounts for only specific organizations | `Local Computer\Computer Configuration\Administrative Templates\OneDrive` | Enabled | Danh sách Tenant ID (mục 3.2) | Chỉ cho phép đồng bộ tài khoản OneDrive thuộc các tổ chức có Tenant ID được khai báo; ngăn người dùng thêm hoặc đồng bộ OneDrive từ tổ chức không được phép. |
-| Computer Configuration – All Users | Enable sync health reporting for OneDrive | `Local Computer\Computer Configuration\Administrative Templates\OneDrive` | Enabled | – | Bật báo cáo tình trạng đồng bộ OneDrive để thiết bị gửi dữ liệu sức khỏe đồng bộ về dashboard quản trị; hỗ trợ nhận diện, điều tra và xử lý lỗi đồng bộ. |
-| User Configuration – Non-Administrators Policy | Removable Disks: Deny write access | `Local Computer\Non-Administrators Policy\User Configuration\Administrative Templates\System\Removable Storage Access` | Enabled | – | Chặn người dùng không thuộc nhóm quản trị ghi dữ liệu vào USB hoặc ổ đĩa rời, giảm rủi ro sao chép dữ liệu công ty ra thiết bị ngoại vi. |
-| User Configuration – Non-Administrators Policy | CD and DVD: Deny write access | (cùng đường dẫn Removable Storage Access) | Enabled | – | Chặn ghi dữ liệu ra đĩa CD/DVD. |
-| User Configuration – Non-Administrators Policy | Tape Drives: Deny write access | (cùng đường dẫn Removable Storage Access) | Enabled | – | Chặn ghi dữ liệu vào thiết bị băng từ, nếu có kết nối với máy client. |
-| User Configuration – Non-Administrators Policy | WPD Devices: Deny write access | (cùng đường dẫn Removable Storage Access) | Enabled | – | Chặn ghi dữ liệu vào thiết bị di động như điện thoại, máy nghe nhạc, máy ảnh hoặc thiết bị Windows Portable Devices khác. |
+Cách đọc: mỗi bảng là một nhánh cấu hình; dòng **in đậm** là đường dẫn trong Group Policy Editor, các dòng bên dưới là chính sách nằm trong đường dẫn đó (cùng cách trình bày với tài liệu hướng dẫn của ACSC/ASD).
 
-> **Ghi chú:** Chính sách *Restrict saving on non-Cloud locations* và các chính sách *Deny write access* cho thiết bị lưu trữ ngoại vi được thực hiện tại nhánh **User Configuration – Non-Administrators Policy**. Các chính sách OneDrive áp dụng tại nhánh **Computer Configuration – All Users** để có hiệu lực chung trên máy client.
+#### A. Computer Configuration – All Users
+
+| Chính sách | Trạng thái | Giá trị | Tác dụng |
+|---|---|---|---|
+| **Computer Configuration\Administrative Templates\OneDrive** | | | |
+| Allow syncing OneDrive accounts for only specific organizations | Enabled | Danh sách Tenant ID (mục 3.2) | Chỉ cho phép đồng bộ tài khoản OneDrive thuộc các tổ chức có Tenant ID được khai báo; ngăn người dùng thêm hoặc đồng bộ OneDrive từ tổ chức không được phép. |
+| Enable sync health reporting for OneDrive | Enabled | – | Bật báo cáo tình trạng đồng bộ OneDrive để thiết bị gửi dữ liệu sức khỏe đồng bộ về dashboard quản trị; hỗ trợ nhận diện, điều tra và xử lý lỗi đồng bộ. |
+
+#### B. User Configuration – Non-Administrators Policy
+
+| Chính sách | Trạng thái | Giá trị | Tác dụng |
+|---|---|---|---|
+| **User Configuration\Administrative Templates\Microsoft Office 2016\Miscellaneous** | | | |
+| Restrict saving on non-Cloud locations | Enabled | 133 | Hạn chế người dùng không thuộc nhóm quản trị lưu tài liệu Office vào vị trí không thuộc cloud; định hướng lưu Word, Excel, PowerPoint lên môi trường cloud do công ty quản lý. |
+| **User Configuration\Administrative Templates\System\Removable Storage Access** | | | |
+| Removable Disks: Deny write access | Enabled | – | Chặn ghi dữ liệu vào USB hoặc ổ đĩa rời, giảm rủi ro sao chép dữ liệu công ty ra thiết bị ngoại vi. |
+| CD and DVD: Deny write access | Enabled | – | Chặn ghi dữ liệu ra đĩa CD/DVD. |
+| Tape Drives: Deny write access | Enabled | – | Chặn ghi dữ liệu vào thiết bị băng từ, nếu có kết nối với máy client. |
+| WPD Devices: Deny write access | Enabled | – | Chặn ghi dữ liệu vào điện thoại, máy nghe nhạc, máy ảnh hoặc thiết bị Windows Portable Devices khác. |
+
+> **Ghi chú:** *Restrict saving on non-Cloud locations* và các chính sách *Deny write access* đặt tại nhánh **User Configuration – Non-Administrators Policy** (chỉ áp cho người dùng không phải quản trị). Các chính sách OneDrive đặt tại nhánh **Computer Configuration – All Users** để có hiệu lực chung trên máy client. Đường dẫn đầy đủ trong `gpedit.msc` bắt đầu bằng `Local Computer\` (nhánh Computer) hoặc `Local Computer\Non-Administrators Policy\` (nhánh Non-Administrators).
 
 ### 3.2. Tenant ID được phép đồng bộ OneDrive
 
-| STT | Tenant ID |
-|---|---|
-| 1 | `02cc35ba-57a1-438b-8ae4-f68de204fe24` |
-| 2 | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` |
-| 3 | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` |
-| 4 | `692eb525-c279-4d74-a010-638ac401a7d9` |
-| 5 | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` |
-| 6 | `4be02620-368a-4c1c-81da-d298040b2d92` |
+| STT | Công ty | Tenant ID |
+|---|---|---|
+| 1 | DTC | `02cc35ba-57a1-438b-8ae4-f68de204fe24` |
+| 2 | CIT | `e9e8ce93-6c8e-48c7-81ec-20fc1841b63c` |
+| 3 | LAV | `fa0fc2b5-6ddc-40aa-8f77-838d08c1e9e7` |
+| 4 | KSL | `692eb525-c279-4d74-a010-638ac401a7d9` |
+| 5 | KIA (công ty chính) | `6fcf7bf2-2eb6-4b21-b92a-914d27ce33a8` |
+| 6 | SNP | `4be02620-368a-4c1c-81da-d298040b2d92` |
 
 > **Lưu ý:** Khi cấu hình chính sách OneDrive tại nhánh Computer Configuration, cần nhập đầy đủ các Tenant ID trên trong mục **Show…** của chính sách. Giá trị trên lấy từ file cấu hình `Policies/OneDrive-Machine-lgpo.txt`.
 
@@ -110,6 +122,8 @@ Cập nhật cấu hình Local Policies, tách rõ phạm vi áp dụng theo hai
 | 50 | `F:\KIENTHINH\KIENTHINH\WS\vfp7.exe` | Visual FoxPro |
 | 51 | `F:\KIENTHINH\KIENTHINH_2015\WS\` | KIENTHINH |
 
+> **Cập nhật file cấu hình (`Policies/SRP-NonAdmin-lgpo.txt`):** file nạp đầy đủ 51 rule ở bảng trên, kể cả rule gắn domain cũ (Sysvol, `kiena.local`, `stcvm003`), `Microsoft\*`, `F:\*\*\*\*` và `%UserProfile%\Desktop`. Ngoài ra có thêm rule bổ sung: Office, OneDrive, Synology Drive (kể cả `cloud-drive-connect.exe`, `cloud-drive-auto-updater.exe`), MicroSIP, updater NSIS, `ViberBA.exe` và `ViberSetup.msi` (bộ cài Viber trong Temp và Package Cache, đường dẫn 8.3 kiểu `NGUYEN~1`) và `__PSScriptPolicyTest_*`. Tổng cộng **66 path Unrestricted** và 1 path Disallowed. Các rule rộng (`Desktop`, `Microsoft\*`, `F:\*\*\*\*`) làm giảm mức bảo vệ của SRP, cần người phê duyệt xác nhận.
+
 #### B. Chặn chạy (Disallowed) – 1 path
 
 | STT | Path Rule | Ghi chú |
@@ -169,7 +183,7 @@ Trước khi cập nhật các chính sách nêu trên, cần chạy script Acti
 - *Restrict saving on non-Cloud locations* được cấu hình đúng tại User Configuration – Non-Administrators Policy và ở trạng thái Enabled.
 - Các chính sách chặn ghi thiết bị lưu trữ ngoại vi được cấu hình đúng tại User Configuration – Non-Administrators Policy và ở trạng thái Enabled.
 - *Allow syncing OneDrive accounts for only specific organizations* và *Enable sync health reporting for OneDrive* được cấu hình đúng tại Computer Configuration – All Users và ở trạng thái Enabled.
-- SRP được cấu hình đúng danh sách: 51 path Unrestricted, 1 path Disallowed và 1 Hash Rule (`vfp7.exe`) nạp sẵn bằng file cấu hình LGPO. Hash rule hiện trong registry người dùng thường tại `HKCU\Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes` với `ItemData` đủ 16 byte (MD5) và 32 byte (SHA256).
+- SRP được cấu hình đúng danh sách: 66 path Unrestricted (51 theo bảng 3.3A cộng rule bổ sung), 1 path Disallowed và 1 Hash Rule (`vfp7.exe`) nạp sẵn bằng file cấu hình LGPO. Hash rule hiện trong registry người dùng thường tại `HKCU\Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes` với `ItemData` đủ 16 byte (MD5) và 32 byte (SHA256).
 - `vfp7.exe` chạy được bằng tài khoản không phải admin, không còn Event 865 báo `vfp7.exe`.
 - Người dùng Office được định hướng lưu tài liệu mới vào vị trí cloud theo chính sách đã cấu hình.
 - OneDrive chỉ cho phép đồng bộ tài khoản thuộc các Tenant ID đã khai báo.
