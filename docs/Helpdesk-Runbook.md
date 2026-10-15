@@ -75,6 +75,14 @@ gpupdate /force
 - Kiểm tra: `reg query "HKLM\SOFTWARE\Policies\Microsoft\OneDrive\TenantAutoMount"`.
 - Chưa có launcher Action1 (`L9`) cho bước này; khi cần tự động có thể bổ sung, giống `L8`.
 
+### 3.3 Thư viện riêng của bộ phận/người dùng: thư mục `Exception/`
+
+Danh sách thư viện **đặc thù của từng bộ phận hoặc người dùng** (ví dụ PLY-DA có 40 thư viện) **không nằm trong template** và **không áp vào nhánh Computer**. Nhánh Computer chỉ giữ 14 thư viện chung (`Ban_Tong_Giam_Doc`, `Ke_toan`, `Phap_ly`...) do `L3b` áp xuống. Danh sách riêng ghi vào nhánh **Non-Administrators** bằng script riêng trong thư mục [`Exception/`](../Exception/README.md):
+
+- Action1 chạy `Exception/L9_AutoMount_<BOPHAN>.ps1` cho nhóm máy của bộ phận, **sau** T3/L3b (T3 xóa danh sách này mỗi lần chạy).
+- File danh sách: `Exception/OneDrive-AutoMount-<BOPHAN>-NonAdmin-lgpo.txt`, xuất bằng T7 với `-Scope "User:Non-Administrators"` trên máy mẫu của bộ phận.
+- Áp tay, thêm bộ phận mới và xử lý khi thư viện chưa hiện: xem `Exception/README.md`.
+
 ## 4. Việc khác cần làm tay tại máy
 | Tình huống | Việc cần làm |
 |---|---|
