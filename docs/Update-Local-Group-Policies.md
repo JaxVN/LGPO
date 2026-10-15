@@ -122,7 +122,7 @@ Cách đọc: mỗi bảng là một nhánh cấu hình; dòng **in đậm** là
 | 50 | `F:\KIENTHINH\KIENTHINH\WS\vfp7.exe` | Visual FoxPro |
 | 51 | `F:\KIENTHINH\KIENTHINH_2015\WS\` | KIENTHINH |
 
-> **Cập nhật file cấu hình (`Policies/SRP-NonAdmin-lgpo.txt`):** file nạp đầy đủ 51 rule ở bảng trên, kể cả rule gắn domain cũ (Sysvol, `kiena.local`, `stcvm003`), `Microsoft\*`, `F:\*\*\*\*` và `%UserProfile%\Desktop`. Ngoài ra có thêm rule bổ sung: Office, OneDrive, Synology Drive, MicroSIP, updater NSIS, `ViberBA.exe` (bộ cài Viber trong Temp, đường dẫn 8.3 kiểu `NGUYEN~1`) và `__PSScriptPolicyTest_*`. Tổng cộng **63 path Unrestricted** và 1 path Disallowed. Các rule rộng (`Desktop`, `Microsoft\*`, `F:\*\*\*\*`) làm giảm mức bảo vệ của SRP, cần người phê duyệt xác nhận.
+> **Cập nhật file cấu hình (`Policies/SRP-NonAdmin-lgpo.txt`):** file nạp đầy đủ 51 rule ở bảng trên, kể cả rule gắn domain cũ (Sysvol, `kiena.local`, `stcvm003`), `Microsoft\*`, `F:\*\*\*\*` và `%UserProfile%\Desktop`. Ngoài ra có thêm rule bổ sung: Office, OneDrive, Synology Drive, MicroSIP, updater NSIS, `ViberBA.exe` và `ViberSetup.msi` (bộ cài Viber trong Temp và Package Cache, đường dẫn 8.3 kiểu `NGUYEN~1`) và `__PSScriptPolicyTest_*`. Tổng cộng **64 path Unrestricted** và 1 path Disallowed. Các rule rộng (`Desktop`, `Microsoft\*`, `F:\*\*\*\*`) làm giảm mức bảo vệ của SRP, cần người phê duyệt xác nhận.
 
 #### B. Chặn chạy (Disallowed) – 1 path
 
@@ -183,7 +183,7 @@ Trước khi cập nhật các chính sách nêu trên, cần chạy script Acti
 - *Restrict saving on non-Cloud locations* được cấu hình đúng tại User Configuration – Non-Administrators Policy và ở trạng thái Enabled.
 - Các chính sách chặn ghi thiết bị lưu trữ ngoại vi được cấu hình đúng tại User Configuration – Non-Administrators Policy và ở trạng thái Enabled.
 - *Allow syncing OneDrive accounts for only specific organizations* và *Enable sync health reporting for OneDrive* được cấu hình đúng tại Computer Configuration – All Users và ở trạng thái Enabled.
-- SRP được cấu hình đúng danh sách: 63 path Unrestricted (51 theo bảng 3.3A cộng rule bổ sung), 1 path Disallowed và 1 Hash Rule (`vfp7.exe`) nạp sẵn bằng file cấu hình LGPO. Hash rule hiện trong registry người dùng thường tại `HKCU\Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes` với `ItemData` đủ 16 byte (MD5) và 32 byte (SHA256).
+- SRP được cấu hình đúng danh sách: 64 path Unrestricted (51 theo bảng 3.3A cộng rule bổ sung), 1 path Disallowed và 1 Hash Rule (`vfp7.exe`) nạp sẵn bằng file cấu hình LGPO. Hash rule hiện trong registry người dùng thường tại `HKCU\Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Hashes` với `ItemData` đủ 16 byte (MD5) và 32 byte (SHA256).
 - `vfp7.exe` chạy được bằng tài khoản không phải admin, không còn Event 865 báo `vfp7.exe`.
 - Người dùng Office được định hướng lưu tài liệu mới vào vị trí cloud theo chính sách đã cấu hình.
 - OneDrive chỉ cho phép đồng bộ tài khoản thuộc các Tenant ID đã khai báo.
