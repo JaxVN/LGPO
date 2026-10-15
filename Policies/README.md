@@ -4,7 +4,7 @@
 |---|---|
 | `NonAdmin-Registry.pol` | Registry.pol của nhóm Non-Administrators (bản cũ) |
 | `Machine-registry.pol` | Registry.pol mức máy (đang trống) |
-| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 40 rule Unrestricted (gồm MicroSIP) + 1 hash rule `vfp7.exe` + 1 Disallowed (chỉ `WinStore.App.exe`). Lọc từ GPO domain (máy 410) |
+| `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 64 rule Unrestricted (đủ rule từ GPO domain cũ, gồm cả rule domain, `Microsoft\*`, `Desktop`, cùng Viber/Acrobat/MicroSIP...) + 1 hash rule `vfp7.exe` + 1 Disallowed (chỉ `WinStore.App.exe`). Có `CLEAR` nên áp lại sẽ xóa rule ngoại lệ |
 | `SRP-NonAdmin-lgpo-Exception.txt` | **LGPO text** – SRP **ngoại lệ**: chỉ **thêm** 2 rule Unrestricted cho Zalo (`...\Programs\Zalo\Zalo.exe` và `...\Zalo-*\Zalo.exe`), **không có `CLEAR`** nên giữ nguyên các rule SRP đang có. Áp sau `SRP-NonAdmin-lgpo.txt` cho máy/user ngoại lệ |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
 | `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện, tên giá trị dạng `Ke_toan - Documents`) |
