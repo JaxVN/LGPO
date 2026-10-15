@@ -12,6 +12,19 @@
 #   OneDrive-Libraries.csv            : Name, Value, Source, Status  (sua Name trong CSV neu can, roi chay lai voi -FromCsv)
 #   OneDrive-Libraries-raw.txt        : dong libraryScope + Providers goc (de debug neu ID khong khop)
 #
+# Cach chay (PowerShell THUONG cua chinh user do - KHONG chon Run as administrator, KHONG chay bang SYSTEM/admin khac,
+# vi script doc HKCU va %LOCALAPPDATA% cua user dang dang nhap OneDrive):
+#   1) Tai script ve (hoac copy vao C:\Soft):
+#        New-Item -ItemType Directory -Path C:\Soft -Force | Out-Null
+#        Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/JaxVN/LGPO/main/A/T7_Export_OneDrive_Libraries.ps1" -OutFile C:\Soft\T7_Export_OneDrive_Libraries.ps1
+#   2) Chay (bo qua Execution Policy CHI cho lan chay nay, khong doi cau hinh may, khong can quyen admin):
+#        powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Soft\T7_Export_OneDrive_Libraries.ps1
+#      Neu dang o trong cua so PowerShell: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force ; C:\Soft\T7_Export_OneDrive_Libraries.ps1
+#   Loi 'running scripts is disabled on this system' / 'cannot be loaded' = Execution Policy chan; dung lenh o buoc 2.
+#   Neu file tai tu Internet bi chan: Unblock-File C:\Soft\T7_Export_OneDrive_Libraries.ps1
+#   3) Xem ket qua trong C:\Soft\OneDrive-Libraries\ (xem muc Ket qua o tren). Kiem tra dong 'OK: n/n thu vien'.
+#   Qua Action1 (may SYSTEM): dung A/L7_Run_T7.ps1 thay cho cac buoc tren.
+#
 # Cach dung:
 #   .\T7_Export_OneDrive_Libraries.ps1                         # quet may nay
 #   .\T7_Export_OneDrive_Libraries.ps1 -FromCsv C:\Soft\OneDrive-Libraries\OneDrive-Libraries.csv   # tao lai .txt tu CSV da sua
