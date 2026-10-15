@@ -46,10 +46,15 @@ Hiện chưa có launcher Action1 cho phần này, vì danh sách thư viện c�
 ### 3.1 Chuẩn bị file thư viện của tenant (một lần)
 1. Chọn **một máy của người dùng thuộc tenant đó** (đã đăng nhập OneDrive bằng tài khoản tenant này).
 2. Trên máy đó, người dùng **đồng bộ (Sync) tất cả thư viện SharePoint** cần tự mount cho cả công ty.
-3. Mở PowerShell **bằng chính người dùng đó, không chạy bằng quyền SYSTEM**, chạy `A/T7_Export_OneDrive_Libraries.ps1` (tải từ repo hoặc từ `raw.githubusercontent.com/JaxVN/LGPO/main/A/T7_Export_OneDrive_Libraries.ps1`):
+3. Mở PowerShell **thường của chính người dùng đó** (không chọn *Run as administrator*, không chạy bằng quyền SYSTEM), tải và chạy `A/T7_Export_OneDrive_Libraries.ps1`:
    ```powershell
-   .\T7_Export_OneDrive_Libraries.ps1
+   New-Item -ItemType Directory -Path C:\Soft -Force | Out-Null
+   Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/JaxVN/LGPO/main/A/T7_Export_OneDrive_Libraries.ps1" -OutFile C:\Soft\T7_Export_OneDrive_Libraries.ps1
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Soft\T7_Export_OneDrive_Libraries.ps1
    ```
+   - Máy báo *running scripts is disabled on this system* (Execution Policy chặn): dùng lệnh thứ ba ở trên. `-ExecutionPolicy Bypass` chỉ có hiệu lực cho lần chạy đó, không đổi cấu hình máy và không cần quyền admin. Nếu file bị chặn vì tải từ Internet: `Unblock-File C:\Soft\T7_Export_OneDrive_Libraries.ps1`.
+   - Qua Action1 (chạy bằng SYSTEM): dùng `A/L7_Run_T7.ps1`, nó tự chạy T7 bằng user đang đăng nhập.
+   - Chỉ cho nhóm Non-Administrators: thêm `-Scope "User:Non-Administrators"` vào cuối lệnh. Mặc định `-Scope Computer` (ghi HKLM, áp cho mọi user).
    Kết quả nằm ở `C:\Soft\OneDrive-Libraries\`:
    - `OneDrive-TenantAutoMount-lgpo.txt`: file để áp bằng LGPO.
    - `OneDrive-Libraries.csv`: cột `Name`, `Value`, `Source`, `Status`. Sửa cột `Name` nếu muốn đặt lại tên thư viện rồi chạy lại với `-FromCsv`.
