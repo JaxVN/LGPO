@@ -5,7 +5,7 @@
 | `NonAdmin-Registry.pol` | Registry.pol của nhóm Non-Administrators (bản cũ) |
 | `Machine-registry.pol` | Registry.pol mức máy (đang trống) |
 | `SRP-NonAdmin-lgpo.txt` | **LGPO text** – SRP (whitelist ứng dụng) cho nhóm **Non-Administrators**: `DefaultLevel=0`, 66 rule Unrestricted (đủ rule từ GPO domain cũ, gồm cả rule domain, `Microsoft\*`, `Desktop`, cùng Viber/Acrobat/MicroSIP...) + 1 hash rule `vfp7.exe` + 1 Disallowed (chỉ `WinStore.App.exe`). Có `CLEAR` nên áp lại sẽ xóa rule ngoại lệ |
-| `SRP-NonAdmin-lgpo-Exception.txt` | **LGPO text** – SRP **ngoại lệ**: chỉ **thêm** 2 rule Unrestricted cho Zalo (`...\Programs\Zalo\Zalo.exe` và `...\Zalo-*\Zalo.exe`), **không có `CLEAR`** nên giữ nguyên các rule SRP đang có. Áp sau `SRP-NonAdmin-lgpo.txt` cho máy/user ngoại lệ |
+| `SRP-NonAdmin-lgpo-Exception.txt` | **LGPO text** – SRP **ngoại lệ**: chỉ **thêm** 4 rule Unrestricted: Zalo (`...\Programs\Zalo\Zalo.exe` và `...\Zalo-*\Zalo.exe`), Viber `...\ViberPC\*\*\pack.exe` và VS Code `...\Programs\Microsoft VS Code\Code.exe`, **không có `CLEAR`** nên giữ nguyên các rule SRP đang có. Áp sau `SRP-NonAdmin-lgpo.txt` cho máy/user ngoại lệ |
 | `SRP-NonAdmin-remove-lgpo.txt` | Gỡ SRP của nhóm Non-Administrators (rollback) |
 | `OneDrive-Machine-lgpo.txt` | **LGPO text** – policy OneDrive mức máy: `EnableSyncAdminReports`, `AllowTenantList` (6 tenant), `TenantAutoMount` (14 thư viện, tên giá trị dạng `Ke_toan - Documents`) |
 | `OneDrive-KFM-lgpo.txt` | **LGPO text mẫu** – `SilentAccountConfig` + Known Folder Move im lặng (Desktop/Documents/Pictures), mức máy. Chứa placeholder `YOUR-TENANT-ID-HERE`; script `A/T8_Apply_OneDrive_KFM.ps1` (6 launcher `A/L8_KFM_<TEN>.ps1`) thay bằng Tenant ID rồi áp bằng `LGPO /t`. Xem mục *OneDrive Known Folder Move theo tenant* trong `A/readme.md` |
@@ -108,7 +108,7 @@ gpupdate /force
 
 Sau đó người dùng đăng xuất và đăng nhập lại.
 
-- File **không có `CLEAR`**: LGPO chỉ ghi thêm 2 rule vào GPO nhóm Non-Administrators, các rule SRP khác giữ nguyên. Chạy lại nhiều lần an toàn (GUID cố định).
+- File **không có `CLEAR`**: LGPO chỉ ghi thêm 4 rule vào GPO nhóm Non-Administrators, các rule SRP khác giữ nguyên. Chạy lại nhiều lần an toàn (GUID cố định).
 - **Thứ tự bắt buộc:** `SRP-NonAdmin-lgpo.txt` có `CLEAR`, áp lại file đó (hoặc chạy T3 rồi áp lại SRP) sẽ **xóa** rule ngoại lệ. Luôn áp lại file Exception sau cùng.
 - Rule nằm ở nhóm Non-Administrators nên **mọi user thường trên máy đó** đều chạy được Zalo, không riêng một người. Muốn chỉ một tài khoản: đổi dòng `User:Non-Administrators` trong file thành `User:<tên tài khoản>` (tài liệu LGPO ghi *valid local account*, chưa kiểm với tài khoản Entra ID).
 - Kiểm tra: `LGPO.exe /parse /u "C:\Windows\System32\GroupPolicyUsers\S-1-5-32-545\User\Registry.pol"` rồi tìm `Zalo`.
@@ -117,6 +117,6 @@ Sau đó người dùng đăng xuất và đăng nhập lại.
 ```
 User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths
-{f035fa75-26bf-56ad-9445-1bc366adcb43};{2a850ea9-1931-56aa-b5d8-5bb19afde013}
+{f035fa75-26bf-56ad-9445-1bc366adcb43};{2a850ea9-1931-56aa-b5d8-5bb19afde013};{b59811d2-f28a-4088-9d8f-e6b96f101d85};{0c79655b-0176-4f30-99bb-83c3795a3bf2}
 DELETEKEYS
 ```
