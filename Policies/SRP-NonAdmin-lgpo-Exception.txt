@@ -271,3 +271,85 @@ User:Non-Administrators
 Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{46d8badb-1322-4f70-a18b-5f5db99192cd}
 LastModified
 QWORD:134365063589340384
+
+; ===== Bo sung: loi 'Cannot launch conpty' (terminal VS Code) - duong dan co tien to \\?\ khong khop rule SystemRoot =====
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5859a3cb-6813-4fbc-9afc-325aceddbb43}
+ItemData
+EXSZ:\\\\?\\C:\\Windows\\System32\\conhost.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5859a3cb-6813-4fbc-9afc-325aceddbb43}
+Description
+SZ:conhost.exe dang \\?\ (ConPTY cua VS Code terminal) - ngoai le
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5859a3cb-6813-4fbc-9afc-325aceddbb43}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{5859a3cb-6813-4fbc-9afc-325aceddbb43}
+LastModified
+QWORD:134365063589340384
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{6fb7c5f1-7539-4479-b4d4-b558b6444cf1}
+ItemData
+EXSZ:\\\\?\\C:\\Windows\\System32\\OpenConsole.exe
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{6fb7c5f1-7539-4479-b4d4-b558b6444cf1}
+Description
+SZ:OpenConsole.exe dang \\?\ - ngoai le
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{6fb7c5f1-7539-4479-b4d4-b558b6444cf1}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{6fb7c5f1-7539-4479-b4d4-b558b6444cf1}
+LastModified
+QWORD:134365063589340384
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{0351c1b7-cbb1-4d5e-8198-82f9bc86844b}
+ItemData
+EXSZ:\\\\?\\C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{0351c1b7-cbb1-4d5e-8198-82f9bc86844b}
+Description
+SZ:VS Code thu muc dang \\?\ - ngoai le
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{0351c1b7-cbb1-4d5e-8198-82f9bc86844b}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{0351c1b7-cbb1-4d5e-8198-82f9bc86844b}
+LastModified
+QWORD:134365063589340384
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{3978ee3a-1894-477c-8768-8b7246e0ec79}
+ItemData
+EXSZ:C:\\Users\\*\\AppData\\Local\\Programs\\Microsoft VS Code\\
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{3978ee3a-1894-477c-8768-8b7246e0ec79}
+Description
+SZ:VS Code thu muc (dang folder, khong dung *) - ngoai le
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{3978ee3a-1894-477c-8768-8b7246e0ec79}
+SaferFlags
+DWORD:0
+
+User:Non-Administrators
+Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers\262144\Paths\{3978ee3a-1894-477c-8768-8b7246e0ec79}
+LastModified
+QWORD:134365063589340384
